@@ -93,10 +93,10 @@ def G4(rows):
     cov = all(f(p, math.e) >= 1 and f(p, 280) >= 2 and f(p, 6.8e6) >= 2.5167 for p in R)
     check("every row >= 1 on [e,280], >= 2 on [280, 6.8e6], >= 2.5167 on [6.8e6, 3.06e10]", cov, "values at e: %s" % [round(f(p, math.e), 2) for p in R])
     worst = 1.0
-    for T in np.geomspace(3.061e10, 1e200, 400):
+    for T in np.geomspace(T0, 1e200, 400):
         worst = min(worst, 1 - min(f(p, T) for p in R) / min(f(p, T) for p in BW_S))
-    check("min over rows below every tabulated Bellotti-Wong bound for 3.06e10 <= T <= 1e200", worst > 0, "min relative gain %.3f%%" % (100 * worst))
-    for T, ref in ((3.061e10, 5.2608), (3e12, 5.9189), (1e15, 6.7157), (1e20, 8.2126), (1e30, 11.0382), (1e100, 28.5808)):
+    check("min over rows below every tabulated Bellotti-Wong bound for T0 <= T <= 1e200 (grid)", worst > 0, "min relative gain %.3f%%" % (100 * worst))
+    for T, ref in ((T0, 5.2608), (3e12, 5.9189), (1e15, 6.7157), (1e20, 8.2126), (1e30, 11.0382), (1e100, 28.5820)):
         v = min(f(p, T) for p in R); check("min over rows at T = %.0e" % T, abs(v - ref) < 2e-3, "%.4f" % v, "%.4f" % ref)
     S0 = min(f(p, 3e12) for p in R)
     check("gap corollary at 3e12: s_n <= 1 + 2 Sbar = 12.838", abs(1 + 2 * S0 - 12.838) < 2e-3, "%.3f" % (1 + 2 * S0))
@@ -108,6 +108,7 @@ def G5(rows):
     print("\nG5  certification with Arb ball arithmetic (python-flint)")
     from flint import arb, ctx
     from sbound_arb import Params as ParamsA, SUBWEYL as SWA, HPY as HPYA, c1_of_Q0 as c1A
+    ctx.prec = 200
     cert = []
     for (Topt, reg, c, r, e), w in zip(ROWS, rows):
         P = ParamsA(c, r, e, n=4, k=(HPYA if reg == 'HPY' else SWA), c1=c1A(10**9), c2=1, Q0=10**9, Q10=10**9, Q11=10**9, prec=200)
@@ -120,15 +121,17 @@ def G5(rows):
     ctx.prec = 200
     R = [(arb(str(w['C1'])), arb(str(w['C2'])), arb(str(w['C3T']))) for w in cert]
     B = [(arb(str(a)), arb(str(b)), arb(str(cc))) for a, b, cc in BW_S]
-    L1, L2 = math.log(3.061e10), math.log(1e200)
+    L1a, L2a = arb(T0).log(), 200 * arb(10).log()          # exact endpoints: T0 = 30 610 046 000 and 10^200
+    L1, L2 = float(L1a.mid()), float(L2a.mid())
     grid = np.linspace(L1, L2, 4000); fl = lambda p, L: float(p[0]) * L + float(p[1]) * math.log(L) + float(p[2])
     arg = [min(range(len(R)), key=lambda i: fl(R[i], L)) for L in grid]
     segs = []; s0 = 0
     for k in range(1, len(grid) + 1):
         if k == len(grid) or arg[k] != arg[s0]: segs.append((grid[s0], grid[k - 1] if k == len(grid) else grid[k], arg[s0])); s0 = k
     allok = True; worst = arb(-1e9)
+    segs[0] = (L1a, segs[0][1], segs[0][2]); segs[-1] = (segs[-1][0], L2a, segs[-1][2])   # rigorous endpoints
     for a, b, i in segs:
-        a, b = arb(a), arb(b)
+        a, b = (a if isinstance(a, arb) else arb(a)), (b if isinstance(b, arb) else arb(b))
         for q in B:
             al, be, ga = R[i][0] - q[0], R[i][1] - q[1], R[i][2] - q[2]
             D = lambda L: al * L + be * L.log() + ga
@@ -137,7 +140,7 @@ def G5(rows):
             for v in vals:
                 if not (v < 0): allok = False
                 if v > worst: worst = v
-    check("Proposition 1.2 proved in ball arithmetic: M(T) < B(T) on [3.061e10, 1e200] (%d segments)" % len(segs), allok, "max difference %s" % worst.str(5), "< 0")
+    check("Proposition 1.2 proved in ball arithmetic: M(T) < B(T) on [T0, 1e200], T0 = 30610046000 (%d segments)" % len(segs), allok, "max difference %s" % worst.str(5), "< 0")
 
 if __name__ == "__main__":
     t = time.time(); G1(); G2(); rows = G3(); G4(rows); G5(rows)
