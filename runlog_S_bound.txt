@@ -49,4 +49,4 @@ G5  certification with Arb ball arithmetic (python-flint)
       segments (L-range -> row): [24.14, 26.33] -> 1; [26.33, 31.56] -> 2; [31.56, 39.86] -> 3; [39.86, 50.44] -> 4; [50.44, 61.68] -> 5; [61.68, 81.87] -> 6; [81.87, 97.58] -> 7; [97.58, 144.07] -> 8; [144.07, 460.52] -> 9
   [PASS] Proposition 1.2 proved in ball arithmetic: M(T) < B(T) on [T0, 1e200], T0 = 30610046000 (9 segments) max difference [-0.073036 +/- 1.64e-7] (row 7 vs BW bound 3) (expected < 0)
 
-PASS=39 FAIL=0  runtime 7s
+PASS=39 FAIL=0  runtime 6s

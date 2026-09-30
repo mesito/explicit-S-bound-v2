@@ -7,8 +7,9 @@ constants of Bellotti-Wong, Math. Comp. (2025), Theorems 1.2/1.4).
 
 Groups:
   G1  reproduction of Bellotti-Wong Table 2 (all five rows, sub-Weyl input, c1 = 1)
-  G2  the 1-line input: c1(Q0) from Patel's second branch and Hiary-Leong-Yang, analytic
-      argument for t >= 3 plus grid checks of the two absorbed inequalities for 0 < t <= 5e4
+  G2  the 1-line input: c1(Q0) = 1/2 + 0.6633/log Q0 from Hoo-Teo (|zeta(1+it)| <= 1/2 log t + 0.6633, t >= e);
+      unshifted form for t >= t0 = Q0, shifted forms for all real t (Lemma 3.2); the elementary constants
+      of the proof evaluated deterministically, plus grid sanity checks for 0 < t <= 5e4
   G3  the nine rows of Theorem 1.1: admissibility, 30-digit evaluation, rounding-up,
       the finite-height terms kappa_3
   G4  coverage of e <= T <= 3.06e10 through computed bounds; comparison with every
