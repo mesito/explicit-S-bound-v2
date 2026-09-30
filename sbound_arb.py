@@ -34,7 +34,7 @@ def c1_of_Q0(Q0):
 
 class Params:
     def __init__(self, c, r, eta, n=5, k=('0.618', '1/6', 1), c1=1, c2=1,
-                 Q0=1, Q1=1.18, Q2=1.18, Q3=3.9, Qsig=1, Q10=2.3, Q11=None,
+                 Q0=1, Q1=1.5, Q2=1.5, Q3=1e9, Qsig=1, Q10=1e9, Q11=1e9,
                  T0=30610046000, J1=64, J2=39, dps=30, prec=200):
         ctx.prec = prec
         f = A
@@ -140,3 +140,7 @@ class Params:
 
 SUBWEYL = ('66.7', '27/164', 0)
 HPY = ('0.618', '1/6', 1)
+
+# Named presets of (input, shifts); see sbound.py.  Defaults of Params are those of PRESET_HPY.
+PRESET_HPY = dict(k=HPY, Q1='1.5', Q2='1.5', Q3=10**9, Q10=10**9, Q11=10**9)
+PRESET_SUBWEYL_BW = dict(k=SUBWEYL, Q1='1.18', Q2='1.18', Q3='3.9', Q10='2.3', Q11='3.9')

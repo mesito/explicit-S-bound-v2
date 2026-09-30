@@ -54,4 +54,4 @@ G6  shifted critical-line input (Lemma 3.1): |(s-1) zeta(s)| <= k1 |Q1+s|^{k2+1}
   [PASS] sub-Weyl shifted inequality on 0 <= t <= 3 (trivial margin)            RHS >= 149.5, LHS <= 4.5 
   [PASS] Q1 = 1.18 of Bellotti-Wong is NOT admissible for the HPY input at t = 0 LHS 0.7302 > RHS 0.5873 
 
-PASS=42 FAIL=0  runtime 6s
+PASS=42 FAIL=0  runtime 7s

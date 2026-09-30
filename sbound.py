@@ -23,7 +23,7 @@ def c1_of_Q0(Q0):
 
 class Params:
     def __init__(self, c, r, eta, n=5, k=(0.618, mp.mpf(1)/6, 1), c1=1, c2=1,
-                 Q0=1, Q1=1.18, Q2=1.18, Q3=3.9, Qsig=1, Q10=2.3, Q11=None,
+                 Q0=1, Q1=1.5, Q2=1.5, Q3=1e9, Qsig=1, Q10=1e9, Q11=1e9,
                  T0=30610046000, J1=64, J2=39, dps=30):
         mp.mp.dps = dps
         f = mp.mpf
@@ -126,3 +126,10 @@ class Params:
 
 SUBWEYL = (66.7, mp.mpf(27) / 164, 0)
 HPY = (0.618, mp.mpf(1) / 6, 1)
+
+# Named presets of (input, shifts).  Shifts must be admissible for the input: the Bellotti-Wong shifts
+# (Q1 = Q2 = 1.18, Q3 = 3.9, Q10 = 2.3, Q11 = 3.9) are admissible for the sub-Weyl input but NOT for HPY
+# (at t = 0: 0.730 > 0.587); the HPY preset uses Q1 = Q2 = 1.5 (certified in verify_S_bound.py, G6) and
+# Q3 = Q10 = Q11 = 1e9.  Defaults of Params are those of PRESET_HPY.
+PRESET_HPY = dict(k=HPY, Q1=1.5, Q2=1.5, Q3=1e9, Q10=1e9, Q11=1e9)
+PRESET_SUBWEYL_BW = dict(k=SUBWEYL, Q1=1.18, Q2=1.18, Q3=3.9, Q10=2.3, Q11=3.9)

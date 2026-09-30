@@ -24,6 +24,11 @@ rows_theorem_1_1.json, rows_certified.json   the nine rows (raw, rounded, certif
     pip install mpmath numpy python-flint
     python3 verify_S_bound.py
 
+Tested with Python 3.12.3, python-flint 0.9.0, mpmath 1.3.0, numpy 2.4.4. The version used in the paper is
+release `v1.0` of this repository. `Params` in `sbound.py` / `sbound_arb.py` defaults to the preset `PRESET_HPY`
+(shifts Q₁ = Q₂ = 1.5, Q₃ = Q₁₀ = Q₁₁ = 10⁹); the Bellotti–Wong shifts are available as `PRESET_SUBWEYL_BW`
+and are admissible only for the sub-Weyl input.
+
 Groups: G1 reproduction of Bellotti–Wong Table 2 (five rows, their inputs); G2 the 1-line input lemma
 (deterministic checks of the elementary constants and of the right sides, grid sanity checks of the shifted inequalities); G3 the nine rows at 30 digits with admissibility, rounding-up and
 the finite-height terms κ₃; G4 coverage of e ≤ T ≤ 3.06×10¹⁰, corollaries; G5 certification of the nine rows
