@@ -26,7 +26,7 @@ Every check prints PASS/FAIL.  Runtime under a minute.
 import sys, math, json, time
 import mpmath as mp
 import numpy as np
-from sbound import Params, SUBWEYL, HPY, c1_of_Q0
+from sbound import Params, SUBWEYL, HPY, c1_of_Q0, PRESET_SUBWEYL_BW
 
 RES = []
 def check(name, ok, measured="", expected=""):
@@ -58,9 +58,10 @@ ROWS = [(T0, 'HPY', 1.1948780, 1.667319, 0.194877),
 f = lambda p, T: p[0] * math.log(T) + p[1] * math.log(math.log(T)) + p[2]
 
 def G1():
-    print("\nG1  Bellotti-Wong Table 2 (sub-Weyl input 66.7 t^{27/164}, c1 = 1, Q0 = 1, n = 5)")
+    print("\nG1  Bellotti-Wong Table 2 with their inputs and shifts: sub-Weyl 66.7 t^{27/164}, c1 = 1, n = 5,\n    (Q0,Q1,Q2,Q3,Q4..Q8,Q10,Q11) = (1,1.18,1.18,3.9,1..1,2.3,3.9) = PRESET_SUBWEYL_BW")
     for (c, r, e), ref in BW_TABLE:
-        P = Params(c, r, e, n=5, k=SUBWEYL, c1=1, c2=1, Q0=1, Q10=2.3, Q11=3.9, dps=20); o = P.constants()
+        P = Params(c, r, e, n=5, c1=1, c2=1, Q0=1, Qsig=1, dps=20, **PRESET_SUBWEYL_BW); o = P.constants()
+        assert (float(P.Q1), float(P.Q2), float(P.Q3), float(P.Q10), float(P.Q11)) == (1.18, 1.18, 3.9, 2.3, 3.9)
         got = [float(o[k]) for k in ('C1', 'C2', 'C2p', 'C3', 'C3p', 'C3T', 'C3Tp')]
         dev = max(abs(g - x) for g, x in zip(got, ref))
         check("row (c,r,eta)=(%.6g,%.6g,%.3g) reproduced" % (c, r, e), dev < 1.5e-5 and P.admissible(), "max dev %.1e" % dev, "< 1.5e-5")

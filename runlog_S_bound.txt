@@ -1,5 +1,6 @@
 
-G1  Bellotti-Wong Table 2 (sub-Weyl input 66.7 t^{27/164}, c1 = 1, Q0 = 1, n = 5)
+G1  Bellotti-Wong Table 2 with their inputs and shifts: sub-Weyl 66.7 t^{27/164}, c1 = 1, n = 5,
+    (Q0,Q1,Q2,Q3,Q4..Q8,Q10,Q11) = (1,1.18,1.18,3.9,1..1,2.3,3.9) = PRESET_SUBWEYL_BW
   [PASS] row (c,r,eta)=(1.00022,1.0006,0.000158) reproduced                     max dev 7.2e-06 (expected < 1.5e-5)
   [PASS] row (c,r,eta)=(1.07001,1.183,0.0699) reproduced                        max dev 9.0e-06 (expected < 1.5e-5)
   [PASS] row (c,r,eta)=(1.0434,1.25045,0.04) reproduced                         max dev 9.0e-06 (expected < 1.5e-5)
@@ -54,4 +55,4 @@ G6  shifted critical-line input (Lemma 3.1): |(s-1) zeta(s)| <= k1 |Q1+s|^{k2+1}
   [PASS] sub-Weyl shifted inequality on 0 <= t <= 3 (trivial margin)            RHS >= 149.5, LHS <= 4.5 
   [PASS] Q1 = 1.18 of Bellotti-Wong is NOT admissible for the HPY input at t = 0 LHS 0.7302 > RHS 0.5873 
 
-PASS=42 FAIL=0  runtime 7s
+PASS=42 FAIL=0  runtime 6s

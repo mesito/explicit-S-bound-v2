@@ -17,15 +17,17 @@ sbound_arb.py         the same in Arb ball arithmetic (python-flint), rigorous q
 verify_S_bound.py     42 PASS/FAIL checks (see below)
 runlog_S_bound.txt    output of a run: PASS = 42, FAIL = 0
 rows_theorem_1_1.json, rows_certified.json   the nine rows (raw, rounded, certified)
+optimize_rows.py      the parameter selection of Section 4 (Nelder–Mead, two chains, cross-checks)
+optimized_rows.json, optimize_rows_log.txt   output of a run of optimize_rows.py (returns the parameters of Table 1)
 ```
 
 ## Run
 
-    pip install mpmath numpy python-flint
-    python3 verify_S_bound.py
+    pip install mpmath numpy python-flint scipy
+    python3 verify_S_bound.py          # the proof-relevant checks, under a minute
+    python3 optimize_rows.py           # provenance of the parameters of Table 1, about ten minutes
 
-Tested with Python 3.12.3, python-flint 0.9.0, mpmath 1.3.0, numpy 2.4.4. The version used in the paper is
-release `v1.0` of this repository. `Params` in `sbound.py` / `sbound_arb.py` defaults to the preset `PRESET_HPY`
+Tested with Python 3.12.3, python-flint 0.9.0, mpmath 1.3.0, numpy 2.4.4. `Params` in `sbound.py` / `sbound_arb.py` defaults to the preset `PRESET_HPY`
 (shifts Q₁ = Q₂ = 1.5, Q₃ = Q₁₀ = Q₁₁ = 10⁹); the Bellotti–Wong shifts are available as `PRESET_SUBWEYL_BW`
 and are admissible only for the sub-Weyl input.
 
