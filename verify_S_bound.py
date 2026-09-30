@@ -14,6 +14,8 @@ Groups:
       the finite-height terms kappa_3
   G4  coverage of e <= T <= 3.06e10 through computed bounds; comparison with every
       tabulated Bellotti-Wong bound; Corollaries (gap bound, N(T) form)
+  G6  the shifted critical-line input with Q1 = 1.5: certified on |t| <= 3 in ball arithmetic (t as a ball),
+      analytic for |t| >= 3; and the failure of the Bellotti-Wong shift 1.18 for the HPY input
   G5  CERTIFICATION (python-flint / Arb): every constant of Theorem 1.1 as a rigorous ball
       enclosure (200-bit ball arithmetic, acb_calc_integrate), the published constants being
       upper bounds of the enclosures rounded up; and a rigorous proof of Proposition 1.2
@@ -32,6 +34,7 @@ def check(name, ok, measured="", expected=""):
 
 T0 = 30610046000
 Q0 = 1e9
+Q1 = 1.5          # shift of the critical-line input (Lemma 3.1); Yang's lines keep Q4 = ... = Q8 = 1 as in Bellotti-Wong
 BW_TABLE = [  # (c, r, eta) -> (C1, C2, C2', C3, C3', C3~, C3~')  [BW, Table 2]
     ((1.000225, 1.000605, 0.000158), (0.10076, 0.24460, 1.68845, 8.08344, 2.38456, 7.20844, 1.50956)),
     ((1.070007, 1.182997, 0.069901), (0.11000, 0.17447, 1.54543, 3.71067, 2.15392, 2.83567, 1.27892)),
@@ -85,7 +88,7 @@ def G3():
     print("\nG3  the nine rows of Theorem 1.1 (n = 4, Q0 = 1e9, 30 digits, rounded up at 6 decimals)")
     out = []
     for Topt, reg, c, r, e in ROWS:
-        P = Params(c, r, e, n=4, k=(HPY if reg == 'HPY' else SUBWEYL), c1=c1_of_Q0(Q0), c2=1, Q0=Q0, Q10=Q0, Q11=Q0, dps=30)
+        P = Params(c, r, e, n=4, k=(HPY if reg == 'HPY' else SUBWEYL), c1=c1_of_Q0(Q0), c2=1, Q0=Q0, Q1=Q1, Q2=Q1, Q3=Q0, Q10=Q0, Q11=Q0, dps=30)
         adm = P.admissible(); o = P.constants()
         up = lambda x: math.ceil(float(x) * 1e6) / 1e6
         row = dict(Topt=Topt, regime=reg, c=c, r=r, eta=e, C1=up(o['C1']), C2=up(o['C2']), C3T=up(o['C3T']), C3N=up(o['C3']),
@@ -119,7 +122,7 @@ def G5(rows):
     ctx.prec = 200
     cert = []
     for (Topt, reg, c, r, e), w in zip(ROWS, rows):
-        P = ParamsA(c, r, e, n=4, k=(HPYA if reg == 'HPY' else SWA), c1=c1A(10**9), c2=1, Q0=10**9, Q10=10**9, Q11=10**9, prec=200)
+        P = ParamsA(c, r, e, n=4, k=(HPYA if reg == 'HPY' else SWA), c1=c1A(10**9), c2=1, Q0=10**9, Q1='1.5', Q2='1.5', Q3=10**9, Q10=10**9, Q11=10**9, prec=200)
         o = P.constants(); ups = {}
         for k, key in (('C1', 'C1'), ('C2', 'C2'), ('C3T', 'C3T'), ('C3', 'C3N')):
             # exact directed rounding: upper endpoint of the ball (exact), times 10^6, ceiling as an exact integer
@@ -153,6 +156,26 @@ def G5(rows):
                 if v > worst: worst = v; wpair = (i + 1, jq + 1)
     check("Proposition 1.2 proved in ball arithmetic: M(T) < B(T) on [T0, 1e200], T0 = 30610046000 (%d segments)" % len(segs), allok, "max difference %s (row %d vs BW bound %d)" % (worst.str(5), wpair[0], wpair[1]), "< 0")
 
+def G6():
+    print("\nG6  shifted critical-line input (Lemma 3.1): |(s-1) zeta(s)| <= k1 |Q1+s|^{k2+1} (log|Q1+s|)^{k3}, s = 1/2+it, Q1 = 1.5")
+    from flint import arb, acb, ctx
+    ctx.prec = 100
+    # |t| <= 3 certified with t as a ball on 600 subintervals (HPY: k1 = 0.618, k2 = 1/6, k3 = 1); for |t| >= 3 the
+    # inequality follows from |zeta(1/2+it)| <= 0.618 t^{1/6} log t, |s-1| <= |Q1+s| and t <= |Q1+s|
+    Q = arb('1.5'); k1 = arb('0.618'); N = 600; h = arb(3) / N; worst = None; ok = True
+    for i in range(N):
+        tb = (h * i).union(h * (i + 1)); s_ = acb(arb('0.5'), tb); m = abs(acb(Q + arb('0.5'), tb))
+        gap = k1 * m**(arb(7) / 6) * m.log() - abs((s_ - 1) * s_.zeta())
+        if not (gap > 0): ok = False
+        if worst is None or gap.lower() < worst: worst = gap.lower()
+    check("HPY shifted inequality certified on 0 <= t <= 3 (ball arithmetic, %d subintervals)" % N, ok, "minimal margin %s" % worst.str(4), "> 0")
+    # sub-Weyl input (rows 7-9): on |t| <= 3, |(s-1) zeta(s)| <= 3.05 * 1.461 < 4.5 while 66.7 |Q1+s|^{1+27/164} >= 66.7 * 2^{1.165} > 149
+    check("sub-Weyl shifted inequality on 0 <= t <= 3 (trivial margin)", 66.7 * 2**(1 + 27 / 164) > 149 and 3.05 * 1.461 < 4.5, "RHS >= 149.5, LHS <= 4.5")
+    # the old shift 1.18 fails for HPY at t = 0 (this is why Q1 = 1.5 is used)
+    import mpmath as mpm; mpm.mp.dps = 15
+    lhs = abs(mpm.mpc(-0.5, 0) * mpm.zeta(0.5)); rhs = 0.618 * abs(mpm.mpc(1.68, 0))**(7 / 6) * mpm.log(1.68)
+    check("Q1 = 1.18 of Bellotti-Wong is NOT admissible for the HPY input at t = 0", lhs > rhs, "LHS %.4f > RHS %.4f" % (lhs, rhs))
+
 if __name__ == "__main__":
-    t = time.time(); G1(); G2(); rows = G3(); G4(rows); G5(rows)
+    t = time.time(); G1(); G2(); rows = G3(); G4(rows); G5(rows); G6()
     print("\nPASS=%d FAIL=%d  runtime %.0fs" % (sum(RES), len(RES) - sum(RES), time.time() - t))

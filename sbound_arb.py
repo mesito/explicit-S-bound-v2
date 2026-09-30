@@ -7,7 +7,8 @@ Arb / python-flint implementation: ball arithmetic at `prec` bits with rigorous 
 Reproduces the five rows of their Table 2 (see verify_S_bound.py).
 
 Inputs (each with its own range; what the method consumes are the shifted forms, valid for all real t):
-  |zeta(1/2+it)|      <= k1 t^k2 (log t)^k3   (t >= 3; HPY: 0.618, 1/6, 1 ; Patel-Yang: 66.7, 27/164, 0)
+  |zeta(1/2+it)|      <= k1 t^k2 (log t)^k3   (t >= 3; HPY: 0.618, 1/6, 1 ; Patel-Yang: 66.7, 27/164, 0;
+                                               shifted form with Q1 = Q2 = 1.5, certified for |t| <= 3 in verify_S_bound.py G6)
   |zeta(1+it)|        <= c1 (log t)^c2        (t >= t0 = Q0; here c2 = 1 and c1 = c1(Q0) from Hoo-Teo, see c1_of_Q0;
                                                shifted form |it zeta(1+it)| <= c1 |Q0+1+it| log|Q0+1+it| for all t)
   |zeta(sigma_k+it)|  <= 1.546 t^{1/(2^k-2)} log t  (t >= 3; Yang), sigma_k = 1 - k/(2^k-2), k = 4..n+4

@@ -49,4 +49,9 @@ G5  certification with Arb ball arithmetic (python-flint)
       segments (L-range -> row): [24.14, 26.33] -> 1; [26.33, 31.56] -> 2; [31.56, 39.86] -> 3; [39.86, 50.44] -> 4; [50.44, 61.68] -> 5; [61.68, 81.87] -> 6; [81.87, 97.58] -> 7; [97.58, 144.07] -> 8; [144.07, 460.52] -> 9
   [PASS] Proposition 1.2 proved in ball arithmetic: M(T) < B(T) on [T0, 1e200], T0 = 30610046000 (9 segments) max difference [-0.073036 +/- 1.64e-7] (row 7 vs BW bound 3) (expected < 0)
 
-PASS=39 FAIL=0  runtime 6s
+G6  shifted critical-line input (Lemma 3.1): |(s-1) zeta(s)| <= k1 |Q1+s|^{k2+1} (log|Q1+s|)^{k3}, s = 1/2+it, Q1 = 1.5
+  [PASS] HPY shifted inequality certified on 0 <= t <= 3 (ball arithmetic, 600 subintervals) minimal margin [0.1471 +/- 6.76e-6] (expected > 0)
+  [PASS] sub-Weyl shifted inequality on 0 <= t <= 3 (trivial margin)            RHS >= 149.5, LHS <= 4.5 
+  [PASS] Q1 = 1.18 of Bellotti-Wong is NOT admissible for the HPY input at t = 0 LHS 0.7302 > RHS 0.5873 
+
+PASS=42 FAIL=0  runtime 6s
