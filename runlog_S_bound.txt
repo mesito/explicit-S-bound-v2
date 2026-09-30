@@ -55,4 +55,18 @@ G6  shifted critical-line input (Lemma 3.1): |(s-1) zeta(s)| <= k1 |Q1+s|^{k2+1}
   [PASS] sub-Weyl shifted inequality on 0 <= t <= 3 (trivial margin)            RHS >= 149.5, LHS <= 4.5 
   [PASS] Q1 = 1.18 of Bellotti-Wong is NOT admissible for the HPY input at t = 0 LHS 0.7302 > RHS 0.5873 
 
-PASS=42 FAIL=0  runtime 6s
+G7  Proposition 1.2, the gains 1 - M(T)/B(T), in ball arithmetic (M: Table 1, B: Bellotti-Wong Table 2)
+  [PASS] gain >= 0.508% on [T0, 1e200] (adaptive bisection, 3545 intervals)      
+  [PASS] gain <= 8.965% on [T0, 1e200] (adaptive bisection, 343 intervals)       
+  [PASS] gain at L = 97.553 lies in [0.0050855, 0.0050866]                      [[0.0050860694 +/- 4.41e-11], [0.0050860694 +/- 4.41e-11]] 
+  [PASS] gain at L = 29.849 lies in [0.0896380, 0.0896390]                      [[0.089638455 +/- 3.59e-10], [0.089638455 +/- 3.59e-10]] 
+  [PASS] point gains of Proposition 1.2 round to 7.4, 8.7, 8.9, 7.0, 3.9, 1.4, 0.6, 3.0 %  
+
+G8  Remark 5.1: the intermediate configurations at T0 (parameters from optimize_rows.py)
+  [PASS] best bound of Bellotti-Wong Table 2 at T0 rounds to 5.678              5.677973 
+  [PASS] their inputs and shifts, (c,r,eta) = (1.182005, 1.682004, 0.182004): admissible, value rounds to 5.357 5.357038 
+  [PASS] HPY input, c1 = 1, (c,r,eta) = (1.184687, 1.682269, 0.184686): admissible, value rounds to 5.295 5.295323 
+  [PASS] shift Q3 = 6 admissible for HPY: 0.618 * 6.5^(1/6) * log 6.5 > 1.461   1.5803 
+  [PASS] row 1 of Table 1 at T0 rounds to 5.256                                 5.256285 
+
+PASS=52 FAIL=0  runtime 7s

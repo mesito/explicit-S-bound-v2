@@ -14,6 +14,9 @@ Groups:
       the finite-height terms kappa_3
   G4  coverage of e <= T <= 3.06e10 through computed bounds; comparison with every
       tabulated Bellotti-Wong bound; Corollaries (gap bound, N(T) form)
+  G7  Proposition 1.2, the gains: certified lower bound 0.508% and upper bound 8.965% on [T0, 1e200] by adaptive
+      bisection in ball arithmetic (monotonicity of M and B), enclosures at the extremal points, the point gains
+  G8  Remark 5.1: the values 5.678, 5.357, 5.295, 5.256 at T0 (parameters from optimize_rows.py)
   G6  the shifted critical-line input with Q1 = 1.5: certified on |t| <= 3 in ball arithmetic (t as a ball),
       analytic for |t| >= 3; and the failure of the Bellotti-Wong shift 1.18 for the HPY input
   G5  CERTIFICATION (python-flint / Arb): every constant of Theorem 1.1 as a rigorous ball
@@ -177,6 +180,65 @@ def G6():
     lhs = abs(mpm.mpc(-0.5, 0) * mpm.zeta(0.5)); rhs = 0.618 * abs(mpm.mpc(1.68, 0))**(7 / 6) * mpm.log(1.68)
     check("Q1 = 1.18 of Bellotti-Wong is NOT admissible for the HPY input at t = 0", lhs > rhs, "LHS %.4f > RHS %.4f" % (lhs, rhs))
 
+def G7(rows):
+    print("\nG7  Proposition 1.2, the gains 1 - M(T)/B(T), in ball arithmetic (M: Table 1, B: Bellotti-Wong Table 2)")
+    from flint import arb, ctx
+    ctx.prec = 200
+    R = [(arb(str(w['C1'])), arb(str(w['C2'])), arb(str(w['C3T']))) for w in rows]
+    Bq = [(arb(str(a)), arb(str(b)), arb(str(cc))) for a, b, cc in BW_S]
+    f = lambda p, L: p[0] * L + p[1] * L.log() + p[2]            # increasing in L (all coefficients > 0)
+    def exmin(xs):                                                  # exact minimum of exact balls
+        m = xs[0]
+        for y in xs[1:]:
+            if y < m: m = y
+        return m
+    Mup = lambda L: exmin([f(p, L).upper() for p in R]);  Mlo = lambda L: exmin([f(p, L).lower() for p in R])
+    Bup = lambda L: exmin([f(q, L).upper() for q in Bq]); Blo = lambda L: exmin([f(q, L).lower() for q in Bq])
+    # M, B increasing  =>  on [a, b]:  1 - Mup(b)/Blo(a) <= gain <= 1 - Mlo(a)/Bup(b)
+    def certify(test):
+        stack = [(arb(T0).log(), 200 * arb(10).log())]; n = 0
+        while stack:
+            a, b = stack.pop(); n += 1
+            if test(a, b): continue
+            if float((b - a).upper()) < 1e-12: return False, n
+            m = (a + b) / 2; stack += [(a, m), (m, b)]
+        return True, n
+    ok_lo, n_lo = certify(lambda a, b: (1 - Mup(b) / Blo(a)) >= arb('0.00508'))
+    ok_hi, n_hi = certify(lambda a, b: (1 - Mlo(a) / Bup(b)) <= arb('0.08965'))
+    check("gain >= 0.508%% on [T0, 1e200] (adaptive bisection, %d intervals)" % n_lo, ok_lo)
+    check("gain <= 8.965%% on [T0, 1e200] (adaptive bisection, %d intervals)" % n_hi, ok_hi)
+    def gain_enclosure(L):
+        return 1 - Mup(L) / Blo(L), 1 - Mlo(L) / Bup(L)
+    for Ls, lo_ref, hi_ref in (('97.553', '0.0050855', '0.0050866'), ('29.849', '0.0896380', '0.0896390')):
+        lo, hi = gain_enclosure(arb(Ls))
+        check("gain at L = %s lies in [%s, %s]" % (Ls, lo_ref, hi_ref), (lo >= arb(lo_ref)) and (hi <= arb(hi_ref)),
+              "[%s, %s]" % (lo.str(8), hi.str(8)))
+    pts = [(arb(T0).log(), '7.4'), (arb(3 * 10**12).log(), '8.7'), (13 * arb(10).log(), '8.9'), (15 * arb(10).log(), '7.0'),
+           (20 * arb(10).log(), '3.9'), (30 * arb(10).log(), '1.4'), (40 * arb(10).log(), '0.6'), (200 * arb(10).log(), '3.0')]
+    ok = True
+    for L, pc in pts:
+        lo, hi = gain_enclosure(L); x = arb(pc) / 100
+        if not ((lo >= x - arb('0.0005')) and (hi < x + arb('0.0005'))): ok = False
+    check("point gains of Proposition 1.2 round to 7.4, 8.7, 8.9, 7.0, 3.9, 1.4, 0.6, 3.0 %", ok)
+
+def G8(rows):
+    print("\nG8  Remark 5.1: the intermediate configurations at T0 (parameters from optimize_rows.py)")
+    L = math.log(T0); l = math.log(L)
+    val = lambda o: min(float(o['C1']) * L + float(o['C2']) * l + float(o['C3T']), float(o['C1']) * L + float(o['C2p']) * l + float(o['C3Tp']))
+    bw = min(a * L + b * l + cc for a, b, cc in BW_S)
+    check("best bound of Bellotti-Wong Table 2 at T0 rounds to 5.678", round(bw, 3) == 5.678, "%.6f" % bw)
+    P = Params(1.182005, 1.682004, 0.182004, n=5, c1=1, c2=1, Q0=1, Qsig=1, dps=20, **PRESET_SUBWEYL_BW)
+    v = val(P.constants())
+    check("their inputs and shifts, (c,r,eta) = (1.182005, 1.682004, 0.182004): admissible, value rounds to 5.357", P.admissible() and round(v, 3) == 5.357, "%.6f" % v)
+    P = Params(1.184687, 1.682269, 0.184686, n=5, k=HPY, c1=1, c2=1, Q0=1, Q1=1.5, Q2=1.5, Q3=6, Q10=2.3, Q11=6, Qsig=1, dps=20)
+    v = val(P.constants())
+    check("HPY input, c1 = 1, (c,r,eta) = (1.184687, 1.682269, 0.184686): admissible, value rounds to 5.295", P.admissible() and round(v, 3) == 5.295, "%.6f" % v)
+    # admissibility of Q3 = Q11 = 6 for the HPY input: |zeta(1/2+it)| <= 1.461 on |t| <= 3 (Hiary) <= 0.618 |6.5+it|^{1/6} log|6.5+it|
+    q3 = 0.618 * 6.5**(1 / 6) * math.log(6.5)
+    check("shift Q3 = 6 admissible for HPY: 0.618 * 6.5^(1/6) * log 6.5 > 1.461", q3 > 1.461, "%.4f" % q3)
+    R1 = (rows[0]['C1'], rows[0]['C2'], rows[0]['C3T']); m = R1[0] * L + R1[1] * l + R1[2]
+    check("row 1 of Table 1 at T0 rounds to 5.256", round(m, 3) == 5.256, "%.6f" % m)
+
 if __name__ == "__main__":
-    t = time.time(); G1(); G2(); rows = G3(); G4(rows); G5(rows); G6()
+    t = time.time(); G1(); G2(); rows = G3(); G4(rows); G5(rows); G6(); G7(rows); G8(rows)
     print("\nPASS=%d FAIL=%d  runtime %.0fs" % (sum(RES), len(RES) - sum(RES), time.time() - t))

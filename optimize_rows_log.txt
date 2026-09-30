@@ -1,12 +1,23 @@
-  T*=3.061e+10  HPY  minimum 5.256277  cleaned (c, r, eta) = (1.1948780, 1.667319, 0.194877)  admissible=True  value 5.256277
-  T*=3e+12      HPY  minimum 5.914230  cleaned (c, r, eta) = (1.1688080, 1.581471, 0.168807)  admissible=True  value 5.914230
-  T*=1e+15      HPY  minimum 6.710819  cleaned (c, r, eta) = (1.1450330, 1.501535, 0.145032)  admissible=True  value 6.710819
-  T*=1e+20      HPY  minimum 8.207425  cleaned (c, r, eta) = (1.1150630, 1.395716, 0.115062)  admissible=True  value 8.207425
-  T*=1e+24      HPY  minimum 9.352083  cleaned (c, r, eta) = (1.0994560, 1.339248, 0.099455)  admissible=True  value 9.352084
-  T*=1e+30      HPY  minimum 11.011808  cleaned (c, r, eta) = (1.0832160, 1.279677, 0.083215)  admissible=True  value 11.011808
-  T*=1e+40      SW   minimum 13.677290  cleaned (c, r, eta) = (1.0660270, 1.215723, 0.066026)  admissible=True  value 13.677290
-  T*=1e+60      SW   minimum 18.753048  cleaned (c, r, eta) = (1.0677880, 1.135577, 0.067787)  admissible=True  value 18.754163
-  T*=1e+100     SW   minimum 28.571294  cleaned (c, r, eta) = (1.0428930, 1.085787, 0.042892)  admissible=True  value 28.572646
-  cross-checks of the regime choice:
-  T*=1e+30      SW   minimum 11.032487  cleaned (c, r, eta) = (1.0827180, 1.282607, 0.082717)  admissible=True  value 11.032488
-  T*=1e+40      HPY  minimum 13.679601  cleaned (c, r, eta) = (1.0659850, 1.216092, 0.065984)  admissible=True  value 13.679602
+1a. chain, Hiary-Patel-Yang input (rows 1-6)
+  row, HPY                   T*=3.061e+10  minimum 5.256277  cleaned (c, r, eta) = (1.1948780, 1.667319, 0.194877)  admissible=True  value 5.256277
+  row, HPY                   T*=3e+12      minimum 5.914230  cleaned (c, r, eta) = (1.1688080, 1.581471, 0.168807)  admissible=True  value 5.914230
+  row, HPY                   T*=1e+15      minimum 6.710819  cleaned (c, r, eta) = (1.1450330, 1.501535, 0.145032)  admissible=True  value 6.710819
+  row, HPY                   T*=1e+20      minimum 8.207425  cleaned (c, r, eta) = (1.1150630, 1.395716, 0.115062)  admissible=True  value 8.207425
+  row, HPY                   T*=1e+24      minimum 9.352083  cleaned (c, r, eta) = (1.0994560, 1.339248, 0.099455)  admissible=True  value 9.352084
+  row, HPY                   T*=1e+30      minimum 11.011808  cleaned (c, r, eta) = (1.0832160, 1.279677, 0.083215)  admissible=True  value 11.011808
+1b. chain, sub-Weyl input (rows 7-9)
+  row, SW                    T*=1e+40      minimum 13.677290  cleaned (c, r, eta) = (1.0660270, 1.215723, 0.066026)  admissible=True  value 13.677290
+  row, SW                    T*=1e+60      minimum 18.753048  cleaned (c, r, eta) = (1.0677880, 1.135577, 0.067787)  admissible=True  value 18.754163
+  row, SW                    T*=1e+100     minimum 28.571294  cleaned (c, r, eta) = (1.0428930, 1.085787, 0.042892)  admissible=True  value 28.572646
+2. cross-checks of the regime choice
+  cross-check, SW            T*=1e+30      minimum 11.032487  cleaned (c, r, eta) = (1.0827180, 1.282607, 0.082717)  admissible=True  value 11.032488
+  cross-check, HPY           T*=1e+40      minimum 13.679601  cleaned (c, r, eta) = (1.0659850, 1.216092, 0.065984)  admissible=True  value 13.679602
+3. scans at T* = 3e12 (Hiary-Patel-Yang input)
+  scan, Q0=1e+08 n=4         T*=3e+12      minimum 5.914684  cleaned (c, r, eta) = (1.1687390, 1.581551, 0.168738)  admissible=True  value 5.914685
+  scan, Q0=1e+10 n=4         T*=3e+12      minimum 5.917615  cleaned (c, r, eta) = (1.1677470, 1.582369, 0.167746)  admissible=True  value 5.917615
+  scan, Q0=1e+09 n=5         T*=3e+12      minimum 5.915086  cleaned (c, r, eta) = (1.1687580, 1.581693, 0.168757)  admissible=True  value 5.915086
+  scan, Q0=1e+09 n=6         T*=3e+12      minimum 5.915575  cleaned (c, r, eta) = (1.1687530, 1.581696, 0.168752)  admissible=True  value 5.915575
+  scan, Q0=1e+09 n=7         T*=3e+12      minimum 5.915851  cleaned (c, r, eta) = (1.1687480, 1.581852, 0.168747)  admissible=True  value 5.915851
+4. intermediate configurations of Remark 5.1 at T0
+  Bellotti-Wong inputs       T*=3.061e+10  minimum 5.357038  cleaned (c, r, eta) = (1.1820050, 1.682004, 0.182004)  admissible=True  value 5.357038
+  HPY input, c1 = 1          T*=3.061e+10  minimum 5.295323  cleaned (c, r, eta) = (1.1846870, 1.682269, 0.184686)  admissible=True  value 5.295323
