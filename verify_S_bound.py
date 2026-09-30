@@ -73,9 +73,12 @@ def G2():
     w0 = max(abs(mp.zeta(1j * mp.mpf(t))) / (float(c1) / math.sqrt(2 * math.pi) * abs(mp.mpc(Q0, t))**0.5 * mp.log(abs(mp.mpc(Q0, t)))) for t in grid)
     check("grid: |it zeta(1+it)| <= c1 |Q0+1+it| log|Q0+1+it| on 0<t<=5e4", w1 < 1, "max ratio %.1e" % w1)
     check("grid: |zeta(it)| <= c1 (2pi)^{-1/2} |Q0+it|^{1/2} log|Q0+it| on 0<t<=5e4", w0 < 1, "max ratio %.1e" % w0)
-    # the elementary bounds of the proof for 0<|t|<=3: |it zeta(1+it)| <= |1+it|(1+|t|) < 13 and |zeta(it)| < 75
-    e1 = max(abs(mp.mpc(0, t) * mp.zeta(1 + 1j * mp.mpf(t))) for t in np.linspace(0.001, 3, 300)); e0 = max(abs(mp.zeta(1j * mp.mpf(t))) for t in np.linspace(0.001, 3, 300))
-    check("elementary bounds on 0<|t|<=3: |it zeta(1+it)| < 13 and |zeta(it)| < 75 (sampled)", e1 < 13 and e0 < 75, "%.2f, %.2f" % (e1, e0))
+    # the two elementary bounds of the proof for 0<|t|<=e, checked deterministically (mpmath, 30 digits)
+    mp.mp.dps = 30; e_ = mp.e
+    b1 = mp.sqrt(1 + e_**2) * (1 + e_); b2 = mp.sinh(mp.pi * e_ / 2) / e_ * mp.sqrt(1 + e_**2) * (1 + e_) / mp.pi
+    check("elementary bounds: sqrt(1+e^2)(1+e) < 11 and pi^-1 sinh(pi e/2)/e sqrt(1+e^2)(1+e) < 46", b1 < 11 and b2 < 46, "%.4f, %.4f" % (b1, b2))
+    check("right sides for |t| <= e exceed 1e10 and 1e5", float(c1) * Q0 * math.log(Q0) > 1e10 and float(c1) / math.sqrt(2 * math.pi) * math.sqrt(Q0) * math.log(Q0) > 1e5, "%.2e, %.2e" % (float(c1) * Q0 * math.log(Q0), float(c1) / math.sqrt(2 * math.pi) * math.sqrt(Q0) * math.log(Q0)))
+    mp.mp.dps = 15
 
 def G3():
     print("\nG3  the nine rows of Theorem 1.1 (n = 4, Q0 = 1e9, 30 digits, rounded up at 6 decimals)")
@@ -103,7 +106,7 @@ def G4(rows):
     for T, ref in ((T0, 5.2563), (3e12, 5.9143), (1e15, 6.7108), (1e20, 8.2075), (1e30, 11.0118), (1e100, 28.5727)):
         v = min(f(p, T) for p in R); check("min over rows at T = %.0e" % T, abs(v - ref) < 2e-3, "%.4f" % v, "%.4f" % ref)
     S0 = min(f(p, 3e12) for p in R)
-    check("gap corollary at 3e12: s_n <= 1 + 2 Sbar = 12.828", abs(1 + 2 * S0 - 12.828) < 2e-3, "%.3f" % (1 + 2 * S0))
+    check("gap corollary at 3e12: s_n <= 1 + 2 Sbar = 12.829", abs(1 + 2 * S0 - 12.829) < 1e-3, "%.3f" % (1 + 2 * S0))
     # N(T) form: C3 (N-form) = C3~ + 7/8 + 1/(50 T0) - (arctan terms)/pi ; check consistency per row
     ok = all(abs(w['C3N'] - (w['C3T'] + 7 / 8)) < 1e-4 for w in rows)
     check("N(T)-form constants = S-form constants + 7/8 (to 1e-4)", ok)
@@ -130,13 +133,11 @@ def G5(rows):
     B = [(arb(str(a)), arb(str(b)), arb(str(cc))) for a, b, cc in BW_S]
     L1a, L2a = arb(T0).log(), 200 * arb(10).log()          # exact endpoints: T0 = 30 610 046 000 and 10^200
     L1, L2 = float(L1a.mid()), float(L2a.mid())
-    grid = np.linspace(L1, L2, 4000); fl = lambda p, L: float(p[0]) * L + float(p[1]) * math.log(L) + float(p[2])
-    arg = [min(range(len(R)), key=lambda i: fl(R[i], L)) for L in grid]
-    segs = []; s0 = 0
-    for k in range(1, len(grid) + 1):
-        if k == len(grid) or arg[k] != arg[s0]: segs.append((grid[s0], grid[k - 1] if k == len(grid) else grid[k], arg[s0])); s0 = k
+    # segments with the decimal breakpoints stated in the paper, used as exact endpoints (rows 1..9 in order)
+    BP = ['26.33', '31.56', '39.86', '50.44', '61.68', '81.87', '97.58', '144.07']
+    ends = [L1a] + [arb(b) for b in BP] + [L2a]
+    segs = [(ends[i], ends[i + 1], i) for i in range(len(R))]
     allok = True; worst = arb(-1e9); wpair = None
-    segs[0] = (L1a, segs[0][1], segs[0][2]); segs[-1] = (segs[-1][0], L2a, segs[-1][2])   # rigorous endpoints
     fm = lambda x: float(x.mid()) if isinstance(x, arb) else float(x)
     print("      segments (L-range -> row): " + "; ".join("[%.2f, %.2f] -> %d" % (fm(a), fm(b), i + 1) for a, b, i in segs))
     for a, b, i in segs:

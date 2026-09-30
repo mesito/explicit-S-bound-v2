@@ -10,7 +10,8 @@ G2  the 1-line input c1(Q0) = 1/2 + 0.6633/log Q0 (Hoo-Teo: |zeta(1+it)| <= 1/2 
   [PASS] c1(1e9) = 0.532008 (rounded up)                                        0.5320075 
   [PASS] grid: |it zeta(1+it)| <= c1 |Q0+1+it| log|Q0+1+it| on 0<t<=5e4         max ratio 5.8e-06 
   [PASS] grid: |zeta(it)| <= c1 (2pi)^{-1/2} |Q0+it|^{1/2} log|Q0+it| on 0<t<=5e4 max ratio 9.8e-04 
-  [PASS] elementary bounds on 0<|t|<=3: |it zeta(1+it)| < 13 and |zeta(it)| < 75 (sampled) 1.91, 0.50 
+  [PASS] elementary bounds: sqrt(1+e^2)(1+e) < 11 and pi^-1 sinh(pi e/2)/e sqrt(1+e^2)(1+e) < 46 10.7696, 45.0837 
+  [PASS] right sides for |t| <= e exceed 1e10 and 1e5                           1.10e+10, 1.39e+05 
 
 G3  the nine rows of Theorem 1.1 (n = 4, Q0 = 1e9, 30 digits, rounded up at 6 decimals)
   [PASS] opt@3e+10 HPY admissible; (C1,C2,C3~) = (0.140750, 0.150951, 1.377296) kappa3=2.1e-04 delta=0.4053 
@@ -32,7 +33,7 @@ G4  coverage, comparisons, corollaries
   [PASS] min over rows at T = 1e+20                                             8.2075 (expected 8.2075)
   [PASS] min over rows at T = 1e+30                                             11.0118 (expected 11.0118)
   [PASS] min over rows at T = 1e+100                                            28.5727 (expected 28.5727)
-  [PASS] gap corollary at 3e12: s_n <= 1 + 2 Sbar = 12.828                      12.829 
+  [PASS] gap corollary at 3e12: s_n <= 1 + 2 Sbar = 12.829                      12.829 
   [PASS] N(T)-form constants = S-form constants + 7/8 (to 1e-4)                  
 
 G5  certification with Arb ball arithmetic (python-flint)
@@ -46,6 +47,6 @@ G5  certification with Arb ball arithmetic (python-flint)
   [PASS] opt@1e+60 certified enclosures; rounded upper bounds equal the published constants radii <= 2.9e-57 
   [PASS] opt@1e+100 certified enclosures; rounded upper bounds equal the published constants radii <= 3.0e-57 
       segments (L-range -> row): [24.14, 26.33] -> 1; [26.33, 31.56] -> 2; [31.56, 39.86] -> 3; [39.86, 50.44] -> 4; [50.44, 61.68] -> 5; [61.68, 81.87] -> 6; [81.87, 97.58] -> 7; [97.58, 144.07] -> 8; [144.07, 460.52] -> 9
-  [PASS] Proposition 1.2 proved in ball arithmetic: M(T) < B(T) on [T0, 1e200], T0 = 30610046000 (9 segments) max difference [-0.073033 +/- 4.06e-7] (row 7 vs BW bound 3) (expected < 0)
+  [PASS] Proposition 1.2 proved in ball arithmetic: M(T) < B(T) on [T0, 1e200], T0 = 30610046000 (9 segments) max difference [-0.073036 +/- 1.64e-7] (row 7 vs BW bound 3) (expected < 0)
 
-PASS=38 FAIL=0  runtime 6s
+PASS=39 FAIL=0  runtime 7s
