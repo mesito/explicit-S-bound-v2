@@ -6,9 +6,10 @@ Companion repository for
 
 Nine explicit bounds |S(T)| ≤ C₁ log T + C₂ log log T + C₃, valid for all T ≥ e, obtained in the framework of
 Bellotti–Wong (Math. Comp. 2025) with parameters selected at finite heights, the Hiary–Patel–Yang input on the
-critical line for T ≤ e¹⁰⁵, and a 1-line input c₁ log|Q₀+1+it| with c₁ = 0.571050 (Patel and Hiary–Leong–Yang
+critical line for the rows selected at heights up to 10³⁰ (the Patel–Yang sub-Weyl input beyond), and a 1-line input c₁ log|Q₀+1+it| with c₁ = 0.571050 (Patel and Hiary–Leong–Yang
 absorbed into the shift Q₀ = 10⁹). Headline row: |S(T)| ≤ 0.134854 log T + 0.158698 log log T + 1.511684.
-Every constant is a certified upper bound of an enclosure computed in Arb ball arithmetic.
+Every constant is a certified upper bound of an enclosure computed in Arb ball arithmetic (200 bits, rigorous quadrature),
+rounded up on the exact upper endpoint in integer arithmetic.
 
 ```
 sbound.py             constants of Bellotti–Wong Thm 1.2/1.4 (mpmath, tanh–sinh quadrature)

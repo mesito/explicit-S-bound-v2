@@ -19,19 +19,19 @@ G3  the nine rows of Theorem 1.1 (n = 4, Q0 = 1e9, 30 digits, rounded up at 6 de
   [PASS] opt@1e+15 HPY admissible; (C1,C2,C3~) = (0.129419, 0.168484, 1.648914) kappa3=2.0e-04 delta=0.3681 
   [PASS] opt@1e+20 HPY admissible; (C1,C2,C3~) = (0.122417, 0.185353, 1.865229) kappa3=2.0e-04 delta=0.3441 
   [PASS] opt@1e+24 HPY admissible; (C1,C2,C3~) = (0.118858, 0.196060, 2.002588) kappa3=2.0e-04 delta=0.3314 
-  [PASS] opt@1e+30 SW  admissible; (C1,C2,C3~) = (0.115164, 0.140922, 2.486101) kappa3=1.9e-04 delta=0.3181 
+  [PASS] opt@1e+30 HPY admissible; (C1,C2,C3~) = (0.115177, 0.210300, 2.170795) kappa3=2.0e-04 delta=0.3176 
   [PASS] opt@1e+40 SW  admissible; (C1,C2,C3~) = (0.111283, 0.153977, 2.737540) kappa3=2.0e-04 delta=0.3026 
   [PASS] opt@1e+60 SW  admissible; (C1,C2,C3~) = (0.107955, 0.207865, 2.821083) kappa3=2.9e-04 delta=0.2832 
   [PASS] opt@1e+100 SW  admissible; (C1,C2,C3~) = (0.105234, 0.214408, 3.184766) kappa3=2.8e-04 delta=0.2714 
 
 G4  coverage, comparisons, corollaries
-  [PASS] every row >= 1 on [e,280], >= 2 on [280, 6.8e6], >= 2.5167 on [6.8e6, 3.06e10] values at e: [1.52, 1.65, 1.78, 1.99, 2.12, 2.6, 2.85, 2.93, 3.29] 
+  [PASS] every row >= 1 on [e,280], >= 2 on [280, 6.8e6], >= 2.5167 on [6.8e6, 3.06e10] values at e: [1.52, 1.65, 1.78, 1.99, 2.12, 2.29, 2.85, 2.93, 3.29] 
   [PASS] min over rows below every tabulated Bellotti-Wong bound for T0 <= T <= 1e200 (grid) min relative gain 0.443% 
   [PASS] min over rows at T = 3e+10                                             5.2608 (expected 5.2608)
   [PASS] min over rows at T = 3e+12                                             5.9189 (expected 5.9189)
   [PASS] min over rows at T = 1e+15                                             6.7157 (expected 6.7157)
   [PASS] min over rows at T = 1e+20                                             8.2126 (expected 8.2126)
-  [PASS] min over rows at T = 1e+30                                             11.0382 (expected 11.0382)
+  [PASS] min over rows at T = 1e+30                                             11.0176 (expected 11.0176)
   [PASS] min over rows at T = 1e+100                                            28.5820 (expected 28.5820)
   [PASS] gap corollary at 3e12: s_n <= 1 + 2 Sbar = 12.838                      12.838 
   [PASS] N(T)-form constants = S-form constants + 7/8 (to 1e-4)                  
@@ -42,10 +42,11 @@ G5  certification with Arb ball arithmetic (python-flint)
   [PASS] opt@1e+15 certified enclosures; rounded upper bounds equal the published constants radii <= 7.1e-59 
   [PASS] opt@1e+20 certified enclosures; rounded upper bounds equal the published constants radii <= 6.6e-59 
   [PASS] opt@1e+24 certified enclosures; rounded upper bounds equal the published constants radii <= 7.6e-59 
-  [PASS] opt@1e+30 certified enclosures; rounded upper bounds equal the published constants radii <= 1.0e-58 
+  [PASS] opt@1e+30 certified enclosures; rounded upper bounds equal the published constants radii <= 8.1e-59 
   [PASS] opt@1e+40 certified enclosures; rounded upper bounds equal the published constants radii <= 1.3e-58 
   [PASS] opt@1e+60 certified enclosures; rounded upper bounds equal the published constants radii <= 2.4e-57 
   [PASS] opt@1e+100 certified enclosures; rounded upper bounds equal the published constants radii <= 3.0e-57 
-  [PASS] Proposition 1.2 proved in ball arithmetic: M(T) < B(T) on [T0, 1e200], T0 = 30610046000 (9 segments) max difference [-0.064575 +/- 4.07e-7] (expected < 0)
+      segments (L-range -> row): [24.14, 26.33] -> 1; [26.33, 31.56] -> 2; [31.56, 39.86] -> 3; [39.86, 50.44] -> 4; [50.44, 61.68] -> 5; [61.68, 81.87] -> 6; [81.87, 99.66] -> 7; [99.66, 145.70] -> 8; [145.70, 460.52] -> 9
+  [PASS] Proposition 1.2 proved in ball arithmetic: M(T) < B(T) on [T0, 1e200], T0 = 30610046000 (9 segments) max difference [-0.064575 +/- 4.07e-7] (row 7 vs BW bound 3) (expected < 0)
 
-PASS=39 FAIL=0  runtime 7s
+PASS=39 FAIL=0  runtime 6s

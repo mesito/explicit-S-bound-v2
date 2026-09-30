@@ -44,7 +44,7 @@ BW_S = [(0.10076, 0.24460, 7.20844), (0.10076, 1.68845, 1.50956), (0.11000, 0.17
 # Theorem 1.1: (T_opt, regime, c, r, eta); n = 4, Q0 = 1e9 throughout
 ROWS = [(3.061e10, 'HPY', 1.1936890, 1.669056, 0.193688), (3e12, 'HPY', 1.1678130, 1.582989, 0.167812),
         (1e15, 'HPY', 1.1443680, 1.503037, 0.144367), (1e20, 'HPY', 1.1145650, 1.396608, 0.114564),
-        (1e24, 'HPY', 1.0988490, 1.340760, 0.098848), (1e30, 'SW', 1.0823560, 1.283457, 0.082355),
+        (1e24, 'HPY', 1.0988490, 1.340760, 0.098848), (1e30, 'HPY', 1.0827740, 1.280653, 0.082773),
         (1e40, 'SW', 1.0657290, 1.216533, 0.065728), (1e60, 'SW', 1.066482, 1.132965, 0.066481),
         (1e100, 'SW', 1.042893, 1.085787, 0.042892)]
 f = lambda p, T: p[0] * math.log(T) + p[1] * math.log(math.log(T)) + p[2]
@@ -96,7 +96,7 @@ def G4(rows):
     for T in np.geomspace(T0, 1e200, 400):
         worst = min(worst, 1 - min(f(p, T) for p in R) / min(f(p, T) for p in BW_S))
     check("min over rows below every tabulated Bellotti-Wong bound for T0 <= T <= 1e200 (grid)", worst > 0, "min relative gain %.3f%%" % (100 * worst))
-    for T, ref in ((T0, 5.2608), (3e12, 5.9189), (1e15, 6.7157), (1e20, 8.2126), (1e30, 11.0382), (1e100, 28.5820)):
+    for T, ref in ((T0, 5.2608), (3e12, 5.9189), (1e15, 6.7157), (1e20, 8.2126), (1e30, 11.0176), (1e100, 28.5820)):
         v = min(f(p, T) for p in R); check("min over rows at T = %.0e" % T, abs(v - ref) < 2e-3, "%.4f" % v, "%.4f" % ref)
     S0 = min(f(p, 3e12) for p in R)
     check("gap corollary at 3e12: s_n <= 1 + 2 Sbar = 12.838", abs(1 + 2 * S0 - 12.838) < 2e-3, "%.3f" % (1 + 2 * S0))
@@ -114,7 +114,10 @@ def G5(rows):
         P = ParamsA(c, r, e, n=4, k=(HPYA if reg == 'HPY' else SWA), c1=c1A(10**9), c2=1, Q0=10**9, Q10=10**9, Q11=10**9, prec=200)
         o = P.constants(); ups = {}
         for k, key in (('C1', 'C1'), ('C2', 'C2'), ('C3T', 'C3T'), ('C3', 'C3N')):
-            b = o[k]; ups[key] = math.ceil(float(b.mid() + b.rad()) * 1e6) / 1e6
+            # exact directed rounding: upper endpoint of the ball (exact), times 10^6, ceiling as an exact integer
+            up = (o[k].upper() * 1000000).ceil().unique_fmpz()
+            assert up is not None
+            ups[key] = int(up) / 1e6
         ok = P.admissible() and all(ups[key] == w[key] for key in ('C1', 'C2', 'C3T', 'C3N')) and max(float(o[k].rad()) for k in ('C1', 'C2', 'C3T')) < 1e-8
         check("opt@%.0e certified enclosures; rounded upper bounds equal the published constants" % Topt, ok, "radii <= %.1e" % max(float(o[k].rad()) for k in ('C1', 'C2', 'C3T')))
         cert.append(ups)
@@ -128,19 +131,21 @@ def G5(rows):
     segs = []; s0 = 0
     for k in range(1, len(grid) + 1):
         if k == len(grid) or arg[k] != arg[s0]: segs.append((grid[s0], grid[k - 1] if k == len(grid) else grid[k], arg[s0])); s0 = k
-    allok = True; worst = arb(-1e9)
+    allok = True; worst = arb(-1e9); wpair = None
     segs[0] = (L1a, segs[0][1], segs[0][2]); segs[-1] = (segs[-1][0], L2a, segs[-1][2])   # rigorous endpoints
+    fm = lambda x: float(x.mid()) if isinstance(x, arb) else float(x)
+    print("      segments (L-range -> row): " + "; ".join("[%.2f, %.2f] -> %d" % (fm(a), fm(b), i + 1) for a, b, i in segs))
     for a, b, i in segs:
         a, b = (a if isinstance(a, arb) else arb(a)), (b if isinstance(b, arb) else arb(b))
-        for q in B:
+        for jq, q in enumerate(B):
             al, be, ga = R[i][0] - q[0], R[i][1] - q[1], R[i][2] - q[2]
             D = lambda L: al * L + be * L.log() + ga
             vals = [D(a), D(b)]; Ls = -be / al
             if (Ls > a) and (Ls < b): vals.append(D(Ls))
             for v in vals:
                 if not (v < 0): allok = False
-                if v > worst: worst = v
-    check("Proposition 1.2 proved in ball arithmetic: M(T) < B(T) on [T0, 1e200], T0 = 30610046000 (%d segments)" % len(segs), allok, "max difference %s" % worst.str(5), "< 0")
+                if v > worst: worst = v; wpair = (i + 1, jq + 1)
+    check("Proposition 1.2 proved in ball arithmetic: M(T) < B(T) on [T0, 1e200], T0 = 30610046000 (%d segments)" % len(segs), allok, "max difference %s (row %d vs BW bound %d)" % (worst.str(5), wpair[0], wpair[1]), "< 0")
 
 if __name__ == "__main__":
     t = time.time(); G1(); G2(); rows = G3(); G4(rows); G5(rows)
