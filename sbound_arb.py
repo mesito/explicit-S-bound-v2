@@ -3,12 +3,12 @@ in the framework of Bellotti and Wong, "Improved estimates for the argument and
 zero-counting function of the Riemann zeta-function", Math. Comp. (2025),
 Theorems 1.2 and 1.4, formulas (3.11)-(3.15) and (4.1)-(4.2).
 
-Independent implementation (mpmath, tanh-sinh quadrature at `dps` digits).
+Arb / python-flint implementation: ball arithmetic at `prec` bits with rigorous quadrature (acb_calc_integrate).
 Reproduces the five rows of their Table 2 (see verify_S_bound.py).
 
 Inputs (all must hold for every t >= 3, with the small-t range absorbed by the Q's):
   |zeta(1/2+it)|      <= k1 t^k2 (log t)^k3         (HPY: 0.618, 1/6, 1 ; Patel-Yang: 66.7, 27/164, 0)
-  |zeta(1+it)|        <= c1 (log t)^c2              (here c2 = 1 and c1 = c1(Q0), see c1_of_Q0)
+  |zeta(1+it)|        <= c1 (log t)^c2              (here c2 = 1 and c1 = c1(Q0) from Hoo-Teo, see c1_of_Q0)
   |zeta(sigma_k+it)|  <= 1.546 t^{1/(2^k-2)} log t  (Yang), sigma_k = 1 - k/(2^k-2), k = 4..n+4
 """
 from flint import arb, acb, ctx
@@ -26,9 +26,9 @@ def A(x):
         p, q = x.split('/'); return arb(p) / arb(q)
     return arb(str(x)) if isinstance(x, float) else arb(x)
 def c1_of_Q0(Q0):
-    """c1 such that min(1/2 log t + 1.93, 1.731 log t/loglog t) <= c1 log|Q0+1+it| for all t >= 3."""
+    """c1 such that 1/2 log t + 0.6633 <= c1 log|Q0+1+it| for all t >= 3 (Hoo-Teo 2026, valid for t >= e)."""
     Q0 = A(Q0)
-    return bmin(arb('0.5') + arb('1.93') / Q0.log(), arb('1.731') / Q0.log().log())
+    return arb('0.5') + arb('0.6633') / Q0.log()
 
 class Params:
     def __init__(self, c, r, eta, n=5, k=('0.618', '1/6', 1), c1=1, c2=1,

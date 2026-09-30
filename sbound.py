@@ -8,16 +8,16 @@ Reproduces the five rows of their Table 2 (see verify_S_bound.py).
 
 Inputs (all must hold for every t >= 3, with the small-t range absorbed by the Q's):
   |zeta(1/2+it)|      <= k1 t^k2 (log t)^k3         (HPY: 0.618, 1/6, 1 ; Patel-Yang: 66.7, 27/164, 0)
-  |zeta(1+it)|        <= c1 (log t)^c2              (here c2 = 1 and c1 = c1(Q0), see c1_of_Q0)
+  |zeta(1+it)|        <= c1 (log t)^c2              (here c2 = 1 and c1 = c1(Q0) from Hoo-Teo, see c1_of_Q0)
   |zeta(sigma_k+it)|  <= 1.546 t^{1/(2^k-2)} log t  (Yang), sigma_k = 1 - k/(2^k-2), k = 4..n+4
 """
 import mpmath as mp
 
 def c1_of_Q0(Q0):
-    """c1 such that min(1/2 log t + 1.93, 1.731 log t/loglog t) <= c1 log|Q0+1+it| for all t >= 3
-    (Patel 2022 second branch; Hiary-Leong-Yang 2025), see Lemma (inputs) of the paper."""
+    """c1 such that 1/2 log t + 0.6633 <= c1 log|Q0+1+it| for all t >= 3 (Hoo-Teo 2026, valid for t >= e);
+    see the input lemma of the paper.  For Q0 = 1e9: c1 = 0.532008."""
     Q0 = mp.mpf(Q0)
-    return min(mp.mpf('0.5') + mp.mpf('1.93') / mp.log(Q0), mp.mpf('1.731') / mp.log(mp.log(Q0)))
+    return mp.mpf('0.5') + mp.mpf('0.6633') / mp.log(Q0)
 
 class Params:
     def __init__(self, c, r, eta, n=5, k=(0.618, mp.mpf(1)/6, 1), c1=1, c2=1,

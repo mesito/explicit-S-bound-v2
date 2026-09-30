@@ -6,47 +6,46 @@ G1  Bellotti-Wong Table 2 (sub-Weyl input 66.7 t^{27/164}, c1 = 1, Q0 = 1, n = 5
   [PASS] row (c,r,eta)=(1.00006,1.49956,1.54e-05) reproduced                    max dev 9.7e-06 (expected < 1.5e-5)
   [PASS] row (c,r,eta)=(1.49916,1.99836,0.499) reproduced                       max dev 9.1e-06 (expected < 1.5e-5)
 
-G2  the 1-line input c1(Q0)
-  [PASS] c1(1e9) = min(1/2+1.93/log Q0, 1.731/loglog Q0) = 0.571050             0.571050 (Patel 0.5931, HLY 0.5711) 
-  [PASS] 1.731 log t/loglog t increasing on [e^e, Q0]                            
-  [PASS] 1/2 log t + 1.93 <= c1 log Q0 for 3 <= t <= e^e                        3.29 <= 11.83 
-  [PASS] grid: |it zeta(1+it)| <= c1 |Q0+1+it| log|Q0+1+it| on 0<t<=5e4         max ratio 5.4e-06 
-  [PASS] grid: |zeta(it)| <= c1 (2pi)^{-1/2} |Q0+it|^{1/2} log|Q0+it| on 0<t<=5e4 max ratio 9.1e-04 
+G2  the 1-line input c1(Q0) = 1/2 + 0.6633/log Q0 (Hoo-Teo: |zeta(1+it)| <= 1/2 log t + 0.6633, t >= e)
+  [PASS] c1(1e9) = 0.532008 (rounded up)                                        0.5320075 
+  [PASS] grid: |it zeta(1+it)| <= c1 |Q0+1+it| log|Q0+1+it| on 0<t<=5e4         max ratio 5.8e-06 
+  [PASS] grid: |zeta(it)| <= c1 (2pi)^{-1/2} |Q0+it|^{1/2} log|Q0+it| on 0<t<=5e4 max ratio 9.8e-04 
+  [PASS] elementary bounds on 0<|t|<=3: |it zeta(1+it)| < 13 and |zeta(it)| < 75 (sampled) 1.91, 0.50 
 
 G3  the nine rows of Theorem 1.1 (n = 4, Q0 = 1e9, 30 digits, rounded up at 6 decimals)
-  [PASS] opt@3e+10 HPY admissible; (C1,C2,C3~) = (0.140825, 0.150008, 1.382992) kappa3=2.1e-04 delta=0.4054 
-  [PASS] opt@3e+12 HPY admissible; (C1,C2,C3~) = (0.134854, 0.158698, 1.511684) kappa3=2.1e-04 delta=0.3861 
-  [PASS] opt@1e+15 HPY admissible; (C1,C2,C3~) = (0.129419, 0.168484, 1.648914) kappa3=2.0e-04 delta=0.3681 
-  [PASS] opt@1e+20 HPY admissible; (C1,C2,C3~) = (0.122417, 0.185353, 1.865229) kappa3=2.0e-04 delta=0.3441 
-  [PASS] opt@1e+24 HPY admissible; (C1,C2,C3~) = (0.118858, 0.196060, 2.002588) kappa3=2.0e-04 delta=0.3314 
-  [PASS] opt@1e+30 HPY admissible; (C1,C2,C3~) = (0.115177, 0.210300, 2.170795) kappa3=2.0e-04 delta=0.3176 
-  [PASS] opt@1e+40 SW  admissible; (C1,C2,C3~) = (0.111283, 0.153977, 2.737540) kappa3=2.0e-04 delta=0.3026 
-  [PASS] opt@1e+60 SW  admissible; (C1,C2,C3~) = (0.107955, 0.207865, 2.821083) kappa3=2.9e-04 delta=0.2832 
-  [PASS] opt@1e+100 SW  admissible; (C1,C2,C3~) = (0.105234, 0.214408, 3.184766) kappa3=2.8e-04 delta=0.2714 
+  [PASS] opt@3e+10 HPY admissible; (C1,C2,C3~) = (0.140750, 0.150951, 1.377296) kappa3=2.1e-04 delta=0.4053 
+  [PASS] opt@3e+12 HPY admissible; (C1,C2,C3~) = (0.134791, 0.159606, 1.505817) kappa3=2.1e-04 delta=0.3860 
+  [PASS] opt@1e+15 HPY admissible; (C1,C2,C3~) = (0.129350, 0.169319, 1.643495) kappa3=2.0e-04 delta=0.3679 
+  [PASS] opt@1e+20 HPY admissible; (C1,C2,C3~) = (0.122384, 0.186030, 1.859015) kappa3=2.0e-04 delta=0.3440 
+  [PASS] opt@1e+24 HPY admissible; (C1,C2,C3~) = (0.118798, 0.197172, 1.996010) kappa3=2.0e-04 delta=0.3311 
+  [PASS] opt@1e+30 HPY admissible; (C1,C2,C3~) = (0.115144, 0.211179, 2.163574) kappa3=2.0e-04 delta=0.3174 
+  [PASS] opt@1e+40 SW  admissible; (C1,C2,C3~) = (0.111259, 0.154570, 2.730936) kappa3=2.0e-04 delta=0.3025 
+  [PASS] opt@1e+60 SW  admissible; (C1,C2,C3~) = (0.108109, 0.207558, 2.795522) kappa3=2.9e-04 delta=0.2839 
+  [PASS] opt@1e+100 SW  admissible; (C1,C2,C3~) = (0.105234, 0.214408, 3.175432) kappa3=2.8e-04 delta=0.2714 
 
 G4  coverage, comparisons, corollaries
-  [PASS] every row >= 1 on [e,280], >= 2 on [280, 6.8e6], >= 2.5167 on [6.8e6, 3.06e10] values at e: [1.52, 1.65, 1.78, 1.99, 2.12, 2.29, 2.85, 2.93, 3.29] 
-  [PASS] min over rows below every tabulated Bellotti-Wong bound for T0 <= T <= 1e200 (grid) min relative gain 0.443% 
-  [PASS] min over rows at T = 3e+10                                             5.2608 (expected 5.2608)
-  [PASS] min over rows at T = 3e+12                                             5.9189 (expected 5.9189)
-  [PASS] min over rows at T = 1e+15                                             6.7157 (expected 6.7157)
-  [PASS] min over rows at T = 1e+20                                             8.2126 (expected 8.2126)
-  [PASS] min over rows at T = 1e+30                                             11.0176 (expected 11.0176)
-  [PASS] min over rows at T = 1e+100                                            28.5820 (expected 28.5820)
-  [PASS] gap corollary at 3e12: s_n <= 1 + 2 Sbar = 12.838                      12.838 
+  [PASS] every row >= 1 on [e,280], >= 2 on [280, 6.8e6], >= 2.5167 on [6.8e6, 3.06e10] values at e: [1.52, 1.64, 1.77, 1.98, 2.11, 2.28, 2.84, 2.9, 3.28] 
+  [PASS] min over rows below every tabulated Bellotti-Wong bound for T0 <= T <= 1e200 (grid) min relative gain 0.510% 
+  [PASS] min over rows at T = 3e+10                                             5.2563 (expected 5.2563)
+  [PASS] min over rows at T = 3e+12                                             5.9143 (expected 5.9143)
+  [PASS] min over rows at T = 1e+15                                             6.7108 (expected 6.7108)
+  [PASS] min over rows at T = 1e+20                                             8.2075 (expected 8.2075)
+  [PASS] min over rows at T = 1e+30                                             11.0118 (expected 11.0118)
+  [PASS] min over rows at T = 1e+100                                            28.5727 (expected 28.5727)
+  [PASS] gap corollary at 3e12: s_n <= 1 + 2 Sbar = 12.828                      12.829 
   [PASS] N(T)-form constants = S-form constants + 7/8 (to 1e-4)                  
 
 G5  certification with Arb ball arithmetic (python-flint)
   [PASS] opt@3e+10 certified enclosures; rounded upper bounds equal the published constants radii <= 6.2e-59 
-  [PASS] opt@3e+12 certified enclosures; rounded upper bounds equal the published constants radii <= 5.7e-59 
-  [PASS] opt@1e+15 certified enclosures; rounded upper bounds equal the published constants radii <= 7.1e-59 
-  [PASS] opt@1e+20 certified enclosures; rounded upper bounds equal the published constants radii <= 6.6e-59 
-  [PASS] opt@1e+24 certified enclosures; rounded upper bounds equal the published constants radii <= 7.6e-59 
-  [PASS] opt@1e+30 certified enclosures; rounded upper bounds equal the published constants radii <= 8.1e-59 
-  [PASS] opt@1e+40 certified enclosures; rounded upper bounds equal the published constants radii <= 1.3e-58 
-  [PASS] opt@1e+60 certified enclosures; rounded upper bounds equal the published constants radii <= 2.4e-57 
+  [PASS] opt@3e+12 certified enclosures; rounded upper bounds equal the published constants radii <= 6.5e-59 
+  [PASS] opt@1e+15 certified enclosures; rounded upper bounds equal the published constants radii <= 6.6e-59 
+  [PASS] opt@1e+20 certified enclosures; rounded upper bounds equal the published constants radii <= 7.1e-59 
+  [PASS] opt@1e+24 certified enclosures; rounded upper bounds equal the published constants radii <= 8.5e-59 
+  [PASS] opt@1e+30 certified enclosures; rounded upper bounds equal the published constants radii <= 8.8e-59 
+  [PASS] opt@1e+40 certified enclosures; rounded upper bounds equal the published constants radii <= 1.1e-58 
+  [PASS] opt@1e+60 certified enclosures; rounded upper bounds equal the published constants radii <= 2.9e-57 
   [PASS] opt@1e+100 certified enclosures; rounded upper bounds equal the published constants radii <= 3.0e-57 
-      segments (L-range -> row): [24.14, 26.33] -> 1; [26.33, 31.56] -> 2; [31.56, 39.86] -> 3; [39.86, 50.44] -> 4; [50.44, 61.68] -> 5; [61.68, 81.87] -> 6; [81.87, 99.66] -> 7; [99.66, 145.70] -> 8; [145.70, 460.52] -> 9
-  [PASS] Proposition 1.2 proved in ball arithmetic: M(T) < B(T) on [T0, 1e200], T0 = 30610046000 (9 segments) max difference [-0.064575 +/- 4.07e-7] (row 7 vs BW bound 3) (expected < 0)
+      segments (L-range -> row): [24.14, 26.33] -> 1; [26.33, 31.56] -> 2; [31.56, 39.86] -> 3; [39.86, 50.44] -> 4; [50.44, 61.68] -> 5; [61.68, 81.87] -> 6; [81.87, 97.58] -> 7; [97.58, 144.07] -> 8; [144.07, 460.52] -> 9
+  [PASS] Proposition 1.2 proved in ball arithmetic: M(T) < B(T) on [T0, 1e200], T0 = 30610046000 (9 segments) max difference [-0.073033 +/- 4.06e-7] (row 7 vs BW bound 3) (expected < 0)
 
-PASS=39 FAIL=0  runtime 6s
+PASS=38 FAIL=0  runtime 6s

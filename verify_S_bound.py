@@ -41,12 +41,16 @@ BW_TABLE = [  # (c, r, eta) -> (C1, C2, C2', C3, C3', C3~, C3~')  [BW, Table 2]
 BW_S = [(0.10076, 0.24460, 7.20844), (0.10076, 1.68845, 1.50956), (0.11000, 0.17447, 2.83567), (0.11000, 1.54543, 1.27892),
         (0.11200, 0.12567, 2.89916), (0.11200, 1.32678, 1.27283), (0.12355, 0.06782, 5.38296), (0.12355, 0.97933, 1.18354),
         (0.16732, 0.17266, 1.08834), (0.16732, 1.61679, 0.52771)]
-# Theorem 1.1: (T_opt, regime, c, r, eta); n = 4, Q0 = 1e9 throughout
-ROWS = [(3.061e10, 'HPY', 1.1936890, 1.669056, 0.193688), (3e12, 'HPY', 1.1678130, 1.582989, 0.167812),
-        (1e15, 'HPY', 1.1443680, 1.503037, 0.144367), (1e20, 'HPY', 1.1145650, 1.396608, 0.114564),
-        (1e24, 'HPY', 1.0988490, 1.340760, 0.098848), (1e30, 'HPY', 1.0827740, 1.280653, 0.082773),
-        (1e40, 'SW', 1.0657290, 1.216533, 0.065728), (1e60, 'SW', 1.066482, 1.132965, 0.066481),
-        (1e100, 'SW', 1.042893, 1.085787, 0.042892)]
+# Theorem 1.1: (T_opt, regime, c, r, eta); n = 4, Q0 = 1e9, c1 = c1(Q0) from Hoo-Teo throughout
+ROWS = [(T0, 'HPY', 1.1948780, 1.667319, 0.194877),
+        (3e+12, 'HPY', 1.1688080, 1.581471, 0.168807),
+        (1e+15, 'HPY', 1.1450330, 1.501535, 0.145032),
+        (1e+20, 'HPY', 1.1150630, 1.395716, 0.115062),
+        (1e+24, 'HPY', 1.0994560, 1.339248, 0.099455),
+        (1e+30, 'HPY', 1.0832160, 1.279677, 0.083215),
+        (1e+40, 'SW', 1.0660270, 1.215723, 0.066026),
+        (1e+60, 'SW', 1.0677880, 1.135577, 0.067787),
+        (1e+100, 'SW', 1.0428930, 1.085787, 0.042892)]
 f = lambda p, T: p[0] * math.log(T) + p[1] * math.log(math.log(T)) + p[2]
 
 def G1():
@@ -58,20 +62,20 @@ def G1():
         check("row (c,r,eta)=(%.6g,%.6g,%.3g) reproduced" % (c, r, e), dev < 1.5e-5 and P.admissible(), "max dev %.1e" % dev, "< 1.5e-5")
 
 def G2():
-    print("\nG2  the 1-line input c1(Q0)")
-    c1 = c1_of_Q0(Q0); B1 = 0.5 + 1.93 / math.log(Q0); H = 1.731 / math.log(math.log(Q0))
-    check("c1(1e9) = min(1/2+1.93/log Q0, 1.731/loglog Q0) = 0.571050", abs(float(c1) - 0.571050) < 2e-6, "%.6f (Patel %.4f, HLY %.4f)" % (c1, B1, H))
-    # analytic part: for e^e <= t <= Q0, HLY(t) <= HLY(Q0) = c1 log Q0 <= c1 log|Q0+1+it|; for t >= Q0, HLY(t)/log t <= c1;
-    # for 3 <= t <= e^e, Patel's 1/2 log t + 1.93 <= 3.30 << c1 log Q0.  Check monotonicity of HLY on [e^e, Q0] on a grid:
-    ts = np.geomspace(math.e**math.e, Q0, 4000); h = 1.731 * np.log(ts) / np.log(np.log(ts))
-    check("1.731 log t/loglog t increasing on [e^e, Q0]", np.all(np.diff(h) > 0))
-    check("1/2 log t + 1.93 <= c1 log Q0 for 3 <= t <= e^e", 0.5 * math.e + 1.93 <= float(c1) * math.log(Q0), "%.2f <= %.2f" % (0.5 * math.e + 1.93, float(c1) * math.log(Q0)))
+    print("\nG2  the 1-line input c1(Q0) = 1/2 + 0.6633/log Q0 (Hoo-Teo: |zeta(1+it)| <= 1/2 log t + 0.6633, t >= e)")
+    c1 = c1_of_Q0(Q0)
+    check("c1(1e9) = 0.532008 (rounded up)", abs(float(c1) - 0.5320077) < 2e-6, "%.7f" % c1)
+    # analytic steps used in the proof: for 3 <= t <= Q0, 1/2 log t + 0.6633 <= 1/2 log Q0 + 0.6633 = c1 log Q0; for t >= Q0,
+    # (1/2 + 0.6633/log t) log t <= c1 log t.  Sanity checks of the two shifted inequalities on a grid (the proof for |t| <= 3 is analytic):
     mp.mp.dps = 15
     grid = list(np.linspace(0.01, 60, 120)) + list(np.geomspace(60, 5e4, 80))
     w1 = max(abs(mp.mpc(0, t) * mp.zeta(1 + 1j * mp.mpf(t))) / (float(c1) * abs(mp.mpc(Q0 + 1, t)) * mp.log(abs(mp.mpc(Q0 + 1, t)))) for t in grid)
     w0 = max(abs(mp.zeta(1j * mp.mpf(t))) / (float(c1) / math.sqrt(2 * math.pi) * abs(mp.mpc(Q0, t))**0.5 * mp.log(abs(mp.mpc(Q0, t)))) for t in grid)
     check("grid: |it zeta(1+it)| <= c1 |Q0+1+it| log|Q0+1+it| on 0<t<=5e4", w1 < 1, "max ratio %.1e" % w1)
     check("grid: |zeta(it)| <= c1 (2pi)^{-1/2} |Q0+it|^{1/2} log|Q0+it| on 0<t<=5e4", w0 < 1, "max ratio %.1e" % w0)
+    # the elementary bounds of the proof for 0<|t|<=3: |it zeta(1+it)| <= |1+it|(1+|t|) < 13 and |zeta(it)| < 75
+    e1 = max(abs(mp.mpc(0, t) * mp.zeta(1 + 1j * mp.mpf(t))) for t in np.linspace(0.001, 3, 300)); e0 = max(abs(mp.zeta(1j * mp.mpf(t))) for t in np.linspace(0.001, 3, 300))
+    check("elementary bounds on 0<|t|<=3: |it zeta(1+it)| < 13 and |zeta(it)| < 75 (sampled)", e1 < 13 and e0 < 75, "%.2f, %.2f" % (e1, e0))
 
 def G3():
     print("\nG3  the nine rows of Theorem 1.1 (n = 4, Q0 = 1e9, 30 digits, rounded up at 6 decimals)")
@@ -96,10 +100,10 @@ def G4(rows):
     for T in np.geomspace(T0, 1e200, 400):
         worst = min(worst, 1 - min(f(p, T) for p in R) / min(f(p, T) for p in BW_S))
     check("min over rows below every tabulated Bellotti-Wong bound for T0 <= T <= 1e200 (grid)", worst > 0, "min relative gain %.3f%%" % (100 * worst))
-    for T, ref in ((T0, 5.2608), (3e12, 5.9189), (1e15, 6.7157), (1e20, 8.2126), (1e30, 11.0176), (1e100, 28.5820)):
+    for T, ref in ((T0, 5.2563), (3e12, 5.9143), (1e15, 6.7108), (1e20, 8.2075), (1e30, 11.0118), (1e100, 28.5727)):
         v = min(f(p, T) for p in R); check("min over rows at T = %.0e" % T, abs(v - ref) < 2e-3, "%.4f" % v, "%.4f" % ref)
     S0 = min(f(p, 3e12) for p in R)
-    check("gap corollary at 3e12: s_n <= 1 + 2 Sbar = 12.838", abs(1 + 2 * S0 - 12.838) < 2e-3, "%.3f" % (1 + 2 * S0))
+    check("gap corollary at 3e12: s_n <= 1 + 2 Sbar = 12.828", abs(1 + 2 * S0 - 12.828) < 2e-3, "%.3f" % (1 + 2 * S0))
     # N(T) form: C3 (N-form) = C3~ + 7/8 + 1/(50 T0) - (arctan terms)/pi ; check consistency per row
     ok = all(abs(w['C3N'] - (w['C3T'] + 7 / 8)) < 1e-4 for w in rows)
     check("N(T)-form constants = S-form constants + 7/8 (to 1e-4)", ok)
