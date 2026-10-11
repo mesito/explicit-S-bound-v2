@@ -25,6 +25,8 @@ Groups:
   G7  Proposition 1.2, the gains: certified lower bound 0.508% and upper bound 8.965% on [T0, 1e200] by adaptive
       bisection in ball arithmetic (monotonicity of M and B), enclosures at the extremal points, the point gains
   G8  Remark 5.1: the values 5.678, 5.357, 5.295, 5.256 at T0 (parameters from optimize_rows.py)
+  G9  the remaining numerical statements of the paper: Tables 1, 2 and 3 as printed, and the values quoted in
+      Sections 2-6 that are not covered by G1-G8 (each check names the place in the paper)
 Every check prints PASS/FAIL.  Runtime under a minute.
 """
 import sys, math, json, time
@@ -98,12 +100,19 @@ def G2():
     check("right sides for |t| <= e exceed 1e10 and 1e5", float(c1) * Q0 * math.log(Q0) > 1e10 and float(c1) / math.sqrt(2 * math.pi) * math.sqrt(Q0) * math.log(Q0) > 1e5, "%.2e, %.2e" % (float(c1) * Q0 * math.log(Q0), float(c1) / math.sqrt(2 * math.pi) * math.sqrt(Q0) * math.log(Q0)))
     mp.mp.dps = 15
 
+RAW = []   # unrounded 30-digit constants of the nine rows (filled by G3, used by G9)
+
+def row_params(reg, c, r, e, **kw):
+    """Params of a row of Table 1 (n = 4, Q0 = 1e9, c1 = c1(Q0), shifts of Remark 3.3), 30 digits; kw overrides"""
+    d = dict(n=4, k=(HPY if reg == 'HPY' else SUBWEYL), c1=c1_of_Q0(Q0), c2=1, Q0=Q0, Q1=Q1, Q2=Q1, Q3=Q0, Q10=Q0, Q11=Q0, dps=30)
+    d.update(kw); return Params(c, r, e, **d)
+
 def G3():
     print("\nG3  the nine rows of Theorem 1.1 (n = 4, Q0 = 1e9, 30 digits, rounded up at 6 decimals)")
-    out = []
+    out = []; del RAW[:]
     for Topt, reg, c, r, e in ROWS:
         P = Params(c, r, e, n=4, k=(HPY if reg == 'HPY' else SUBWEYL), c1=c1_of_Q0(Q0), c2=1, Q0=Q0, Q1=Q1, Q2=Q1, Q3=Q0, Q10=Q0, Q11=Q0, dps=30)
-        adm = P.admissible(); o = P.constants()
+        adm = P.admissible(); o = P.constants(); RAW.append((P, o))
         up = lambda x: math.ceil(float(x) * 1e6) / 1e6
         row = dict(Topt=Topt, regime=reg, c=c, r=r, eta=e, C1=up(o['C1']), C2=up(o['C2']), C3T=up(o['C3T']), C3N=up(o['C3']),
                    raw=[float(mp.nstr(o[k], 12)) for k in ('C1', 'C2', 'C3T', 'C3')], kap3=float(o['kap3']),
@@ -153,7 +162,7 @@ def G5(rows):
             up = (o[k].upper() * 1000000).ceil().unique_fmpz()
             assert up is not None
             ups[key] = int(up) / 1e6
-        ok = P.admissible() and all(ups[key] == w[key] for key in ('C1', 'C2', 'C3T', 'C3N')) and max(float(o[k].rad()) for k in ('C1', 'C2', 'C3T')) < 1e-8
+        ok = P.admissible() and all(ups[key] == w[key] for key in ('C1', 'C2', 'C3T', 'C3N')) and max(float(o[k].rad()) for k in ('C1', 'C2', 'C3T')) < 1e-56
         check("opt@%.0e certified enclosures; rounded upper bounds equal the published constants" % Topt, ok, "radii <= %.1e" % max(float(o[k].rad()) for k in ('C1', 'C2', 'C3T')))
         cert.append(ups)
     json.dump([dict(Topt=Topt, regime=reg, c=c, r=r, eta=e, C1=u['C1'], C2=u['C2'], C3T=u['C3T'], C3N=u['C3N'])
@@ -180,6 +189,7 @@ def G5(rows):
             for v in vals:
                 if not (v < 0): allok = False
                 if v > worst: worst = v; wpair = (i + 1, jq + 1)
+    allok = allok and (worst < arb('-0.0730')) and (worst > arb('-0.0731')) and wpair == (7, 3)   # the extremal value quoted in the proof
     check("Proposition 1.2 proved in ball arithmetic: M(T) < B(T) on [T0, 1e200], T0 = 30610046000 (%d segments)" % len(segs), allok, "max difference %s (row %d vs BW bound %d)" % (worst.str(5), wpair[0], wpair[1]), "< 0")
 
 def G6():
@@ -261,6 +271,91 @@ def G8(rows):
     R1 = (rows[0]['C1'], rows[0]['C2'], rows[0]['C3T']); m = R1[0] * L + R1[1] * l + R1[2]
     check("row 1 of Table 1 at T0 rounds to 5.256", round(m, 3) == 5.256, "%.6f" % m)
 
+# ---- the numbers of the paper as printed (G9)
+TABLE1 = [(0.140750, 0.150951, 1.377296), (0.134791, 0.159606, 1.505817), (0.129350, 0.169319, 1.643495),
+          (0.122384, 0.186030, 1.859015), (0.118798, 0.197172, 1.996010), (0.115144, 0.211179, 2.163574),
+          (0.111259, 0.154570, 2.730936), (0.108109, 0.207558, 2.795522), (0.105234, 0.214408, 3.175432)]
+TABLE2 = [('2.1e-04', '0.14074976', '0.15095051', '1.37729567'), ('2.1e-04', '0.13479015', '0.15960505', '1.50581607'),
+          ('2.0e-04', '0.12934985', '0.16931805', '1.64349485'), ('2.0e-04', '0.12238338', '0.18602913', '1.85901425'),
+          ('2.0e-04', '0.11879775', '0.19717111', '1.99600992'), ('2.0e-04', '0.11514373', '0.21117818', '2.16357331'),
+          ('2.0e-04', '0.11125810', '0.15456953', '2.73093591'), ('2.9e-04', '0.10810835', '0.20755749', '2.79552145'),
+          ('2.8e-04', '0.10523393', '0.21440763', '3.17543128')]
+TABLE3 = [(T0, '5.256', 1, '5.678', '7.4'), (1e11, '5.430', 1, '5.884', '7.7'), (3e12, '5.914', 2, '6.475', '8.7'),
+          (1e13, '6.083', 2, '6.679', '8.9'), (1e15, '6.711', 3, '7.213', '7.0'), (1e18, '7.624', 4, '8.009', '4.8'),
+          (1e20, '8.207', 4, '8.538', '3.9'), (1e24, '9.352', 5, '9.593', '2.5'), (1e30, '11.012', 6, '11.168', '1.4'),
+          (1e40, '13.677', 7, '13.756', '0.6'), (1e60, '18.754', 8, '18.893', '0.7'), (1e100, '28.573', 9, '29.113', '1.9'),
+          (1e200, '52.952', 9, '54.562', '3.0')]
+
+def G9(rows):
+    print("\nG9  the remaining numerical statements of the paper")
+    mp.mp.dps = 30
+    R = [(w['C1'], w['C2'], w['C3T']) for w in rows]
+    twoPiL = lambda P: 2 * mp.pi * P.L
+    val = lambda o, T: o['C1'] * mp.log(mp.mpf(T)) + o['C2'] * mp.log(mp.log(mp.mpf(T))) + o['C3T']
+    # Tables 1 and 2 as printed
+    check("Table 1: the 27 printed constants are the certified ones; Corollary 1.4: 2.380817", R == TABLE1 and rows[1]['C3N'] == 2.380817)
+    t2 = [("%.1e" % w['kap3'], "%.8f" % w['raw'][0], "%.8f" % w['raw'][1], "%.8f" % w['raw'][2]) for w in rows]
+    kc = [w['kap3_in_C3'] for w in rows]
+    check("Table 2: kappa3 and the raw values as printed; kappa3 enters C3~ with 3.8e-5 ... 6.8e-5 (< 7e-5, Remark 3.3)",
+          t2 == TABLE2 and 3.8e-5 <= min(kc) and max(kc) <= 6.8e-5, "contributions %.2e ... %.2e" % (min(kc), max(kc)))
+    # Table 3: M(T), the row attaining it, the best tabulated bound of Bellotti-Wong, the gain
+    got = []
+    for T, M_, row_, B_, g_ in TABLE3:
+        vals = [f(p, T) for p in R]; m = min(vals); b = min(f(p, T) for p in BW_S)
+        got.append(("%.3f" % m, vals.index(m) + 1, "%.3f" % b, "%.1f" % (100 * (1 - m / b))))
+    check("Table 3: all 13 rows (M(T), row attaining it, min of BW Table 2, gain) as printed", got == [t[1:] for t in TABLE3])
+    # Corollary 1.3
+    b12 = 1 + 2 * min(f(p, 3e12) for p in BW_S); E = 1 / (24 * math.pi * 3e12) + 7 / (2880 * math.pi * 3e12**3)
+    check("Corollary 1.3: the gap bound from BW Table 2 at 3e12 rounds to 13.95; E(3e12) < 1e-13", round(b12, 2) == 13.95 and E < 1e-13, "%.4f, %.1e" % (b12, E))
+    # Section 2
+    c1 = c1_of_Q0(Q0); z3 = abs(mp.zeta(mp.mpc(1, 3))); c3 = c1 * mp.log(3)
+    check("Section 2: |zeta(1+3i)| = 0.638 exceeds c1 log 3 = 0.584", round(float(z3), 3) == 0.638 and round(float(c3), 3) == 0.584 and z3 > c3, "%.4f, %.4f" % (z3, c3))
+    P2, o2 = RAW[1]; T0m = mp.mpf(T0)
+    mis = max(0, o2['M2']) * (1 / (2 * T0m * mp.log(mp.log(T0m))) - 1 / (2 * T0m * mp.log(T0m))) / twoPiL(P2)
+    check("Section 2: with log log T0 in kappa3, C3~ of row 2 would be larger by 1.5e-5", 1.45e-5 <= mis < 1.55e-5, "%.3e" % mis)
+    # coefficient of the integral over [theta_1, theta_{sigma_{n+4}}] in M1: product (paper of BW) against sum (their code)
+    def sum_vs_product(P, o):
+        N4 = 2**(P.n + 4); sn = P.sig[P.n]
+        return o['I3'] * (1 / ((N4 - 2) * (1 - sn)) - 1 / ((N4 - 2) + (1 - sn))) / (2 * P.T0) / twoPiL(P)
+    dbw = []
+    for (c, r, e), ref in BW_TABLE:
+        P = Params(c, r, e, n=5, c1=1, c2=1, Q0=1, Qsig=1, dps=30, **PRESET_SUBWEYL_BW); dbw.append(sum_vs_product(P, P.constants()))
+    d2 = sum_vs_product(P2, o2)
+    check("Section 2: sum instead of product in M1 changes C3~ by < 1e-12 in BW Table 2 and by 1.9e-6 in row 2",
+          0 < max(dbw) < 1e-12 and 1.85e-6 <= d2 < 1.95e-6 and min(o['M1'] for _, o in RAW) > 0, "%.1e, %.3e" % (max(dbw), d2))
+    # Section 3
+    x = mp.findroot(lambda L: mp.log(mp.mpf('0.618')) + L / 6 + mp.log(L) - mp.log(mp.mpf('66.7')) - 27 * L / 164, 90)
+    check("Lemma 3.1: 0.618 t^{1/6} log t = 66.7 t^{27/164} at t = e^{89.9} = 1.1e39", round(float(x), 1) == 89.9 and 1.05e39 < mp.e**x < 1.15e39, "log t = %.3f, t = %.2e" % (x, mp.e**x))
+    LQ = mp.log(mp.mpf(Q0)); cP = mp.mpf('0.5') + mp.mpf('1.93') / LQ; cH = mp.mpf('1.731') / mp.log(LQ)
+    up4 = lambda v: math.ceil(float(v) * 1e4) / 1e4
+    check("Remark 3.3: log c1 = -0.631; Patel gives c1 = 0.5932, Hiary-Leong-Yang 0.5711 (Q0 = 1e9, rounded up)",
+          round(float(mp.log(c1)), 3) == -0.631 and up4(cP) == 0.5932 and up4(cH) == 0.5711, "%.4f, %.6f, %.6f" % (mp.log(c1), cP, cH))
+    dq = max(abs(row_params(reg, c, r, e, Q1=1.18, Q2=1.18).constants()['C3T'] - o['C3T']) for (Topt, reg, c, r, e), (P, o) in zip(ROWS, RAW))
+    check("Remark 3.3: Q1 = Q2 = 1.18 in place of 1.5 changes C3~ by < 1e-11 in every row", dq < 1e-11, "max %.1e" % dq)
+    Topt, reg, c, r, e = ROWS[1]; oy = row_params(reg, c, r, e, Qsig=Q0).constants()
+    check("Remark 3.3: Q4 = ... = Q8 = 1e9 gives C3~ = 1.505834 for row 2 (rounded up)", math.ceil(float(oy['C3T']) * 1e6) / 1e6 == 1.505834, "%.8f" % oy['C3T'])
+    # Section 4 (i): margin 1e-8 in place of 1e-6
+    drop = []
+    for i, ((Topt, reg, c, r, e), (P, o)) in enumerate(zip(ROWS, RAW), 1):
+        c8 = 1 + e + 1e-8; r8 = (2 * c8 - 1 + 1e-8) if i >= 8 else r
+        P8 = row_params(reg, c8, r8, e); assert P8.admissible()
+        drop.append(float(val(o, Topt) - val(P8.constants(), Topt)))
+    check("Section 4 (i): margin 1e-8 lowers the bound at T* by < 4.3e-7 (rows 1-7), by 1.0e-3 and 1.2e-3 (rows 8, 9)",
+          0 < min(drop) and max(drop[:7]) < 4.3e-7 and "%.1e" % drop[7] == '1.0e-03' and "%.1e" % drop[8] == '1.2e-03',
+          "max rows 1-7 %.3e; rows 8, 9: %.3e, %.3e" % (max(drop[:7]), drop[7], drop[8]))
+    # Section 5
+    c, r, e = ROWS[1][2:]; s1 = c + (c - 0.5)**2 / r
+    nums = [round(v, 3) for v in (c - r, 1 - c, -e, 2 * c - s1 - 0.5, s1, c + r, math.acos((1 + e - c) / r))]
+    check("Section 5: row 2 has c-r, 1-c, -eta, delta, sigma1, c+r, theta_{1+eta} = -0.413, -0.169, -0.169, 0.386, 1.452, 2.750, 1.571",
+          nums == [-0.413, -0.169, -0.169, 0.386, 1.452, 2.750, 1.571], str(nums))
+    v2 = [round(f(R[1], T), 3) for T in (math.e, 280, 6.8e6)]; ve = [round(f(p, math.e), 2) for p in R]
+    check("Section 5: row 2 equals 1.641, 2.541, 4.066 at T = e, 280, 6.8e6; the rows at T = e lie between 1.52 and 3.28",
+          v2 == [1.641, 2.541, 4.066] and min(ve) == 1.52 and max(ve) == 3.28, "%s; %.2f ... %.2f" % (v2, min(ve), max(ve)))
+    # Section 6
+    dn = max(abs(o['C3'] - o['C3T'] - mp.mpf(7) / 8) for _, o in RAW)
+    check("Corollary 1.4: the N(T)-form constant equals C3~ + 7/8 to within 1e-10 in every row", dn < 1e-10, "max %.1e" % dn)
+    mp.mp.dps = 15
+
 if __name__ == "__main__":
-    t = time.time(); G1(); G2(); rows = G3(); G4(rows); G5(rows); G6(); G7(rows); G8(rows)
+    t = time.time(); G1(); G2(); rows = G3(); G4(rows); G5(rows); G6(); G7(rows); G8(rows); G9(rows)
     print("\nPASS=%d FAIL=%d  runtime %.0fs" % (sum(RES), len(RES) - sum(RES), time.time() - t))

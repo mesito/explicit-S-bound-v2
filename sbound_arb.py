@@ -116,7 +116,8 @@ class Params:
         #      second term of kappa3 is max(0, M2)/(2 T0 log T0) (log T0, not log log T0)
         Ls = self.Lstar; Q0, Q2, Q10, Q11 = self.Q0, self.Q2, self.Q10, self.Q11; Q0n = max(Q0, self.Qsig)
         M1 = q(lambda w: Ls(w, -1), 0, th(1 + eta)) + q(lambda w: Ls(w, Q0), th(1 + eta), th(1))
-        M1 += q(lambda w: ((N4 - 1) * (1 - sg(w)) + (N4 - 2) * (sg(w) - s[n])) * Ls(w, Q0n), th(1), th(s[n])) / ((N4 - 2) * (1 - s[n]))
+        I3 = q(lambda w: ((N4 - 1) * (1 - sg(w)) + (N4 - 2) * (sg(w) - s[n])) * Ls(w, Q0n), th(1), th(s[n]))
+        M1 += I3 / ((N4 - 2) * (1 - s[n]))
         for h in range(n):
             a, b = 2**(h + 4) - 2, 2**(h + 5) - 2
             M1 += q(lambda w, h=h, a=a, b=b: (b * (a + 1) * (s[1 + h] - sg(w)) + a * (b + 1) * (sg(w) - s[h])) * Ls(w, self.Qsig), th(s[1 + h]), th(s[h])) / (a * b * (s[1 + h] - s[h]))
@@ -138,7 +139,8 @@ class Params:
         C3 = base + (self.c.zeta() / (2 * self.c).zeta()).log() / (2 * self.L) + tail
         C3p = base + tail
         corr = -f(7) / 8 - 1 / (50 * self.T0) + (((self.sigma1 - 1) / self.T0).atan() + (1 / (2 * self.T0)).atan()) / arb.pi()
-        return dict(C1=C1, C2=C2, C2p=C2p, C3=C3, C3p=C3p, C3T=C3 + corr, C3Tp=C3p + corr, kap3=kap3)
+        return dict(C1=C1, C2=C2, C2p=C2p, C3=C3, C3p=C3p, C3T=C3 + corr, C3Tp=C3p + corr, kap3=kap3,
+                    M1=M1, M2=M2, I3=I3)      # M1, M2 and the integral I3 over [theta_1, theta_{sigma_{n+4}}] in M1, for diagnostics
 
 SUBWEYL = ('66.7', '27/164', 0)
 HPY = ('0.618', '1/6', 1)

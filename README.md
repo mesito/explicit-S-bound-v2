@@ -16,8 +16,8 @@ quadrature), rounded up on the exact upper endpoint in integer arithmetic.
 ```
 sbound.py             constants of Bellotti–Wong Thm 1.2/1.4 (mpmath, tanh–sinh quadrature)
 sbound_arb.py         the same in Arb ball arithmetic (python-flint), rigorous quadrature at 200 bits
-verify_S_bound.py     54 PASS/FAIL checks (see below)
-runlog_S_bound.txt    output of a run: PASS = 54, FAIL = 0
+verify_S_bound.py     69 PASS/FAIL checks (see below)
+runlog_S_bound.txt    output of a run: PASS = 69, FAIL = 0
 rows_theorem_1_1.json, rows_certified.json   the nine rows (raw, rounded, certified), written by verify_S_bound.py
 optimize_rows.py      the parameter selection of Section 4 (two chains, cross-checks, scans over Q₀ and n)
                       and the intermediate configurations of Remark 5.1
@@ -50,4 +50,5 @@ Proposition 1.2 (endpoints and critical point of every difference); G6 certifica
 inequality with Q₁ = 1.5 on |t| ≤ 3 (t as a ball) and the failure of the Bellotti–Wong shift 1.18 for the
 Hiary–Patel–Yang input; G7 the gains in Proposition 1.2 (certified bounds 0.508% and 8.965% on the whole interval by
 adaptive bisection in ball arithmetic, enclosures at the two extremal points, the point gains); G8 the values 5.678,
-5.357, 5.295, 5.256 of Remark 5.1.
+5.357, 5.295, 5.256 of Remark 5.1; G9 the remaining numerical statements of the paper (Tables 1, 2 and 3 as printed,
+and the values quoted in Sections 2–6 that are not covered by G1–G8).
