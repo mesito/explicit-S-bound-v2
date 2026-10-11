@@ -28,7 +28,7 @@ def A(x):
         p, q = x.split('/'); return arb(p) / arb(q)
     return arb(str(x)) if isinstance(x, float) else arb(x)
 def c1_of_Q0(Q0):
-    """c1 such that 1/2 log t + 0.6633 <= c1 log|Q0+1+it| for all t >= 3 (Hoo-Teo 2026, valid for t >= e)."""
+    """c1(Q0) = 1/2 + 0.6633/log Q0 of Lemma 3.2 (see sbound.py), as a ball."""
     Q0 = A(Q0)
     return arb('0.5') + arb('0.6633') / Q0.log()
 
@@ -111,7 +111,9 @@ class Params:
         kap1 = (arb.pi() / (4 * self.J1)) * ((self.c + self.r).zeta().log() + 2 * sum(((self.c + self.r * (arb.pi() * j / (2 * self.J1)).cos()).zeta().log() for j in range(1, self.J1)), arb(0)))
         t1c = th(1 - self.c)
         kap2 = ((arb.pi() - t1c) / (2 * self.J2)) * ((1 - self.c + self.r).zeta().log() + 2 * sum(((1 - self.c - self.r * (arb.pi() * j / self.J2 + (1 - arb(j) / self.J2) * t1c).cos()).zeta().log() for j in range(1, self.J2)), arb(0)))
-        # ---- kappa3 (finite-T0 terms)
+        # ---- kappa3 (finite-T0 terms).  Two points of [BW, 3.4.3], see Section 2 of the paper: the coefficient of the integral
+        #      over [theta_1, theta_{sigma_{n+4}}] in M1 is 1/((2^{n+4}-2)(1-sigma_{n+4})) (a product, as displayed there), and the
+        #      second term of kappa3 is max(0, M2)/(2 T0 log T0) (log T0, not log log T0)
         Ls = self.Lstar; Q0, Q2, Q10, Q11 = self.Q0, self.Q2, self.Q10, self.Q11; Q0n = max(Q0, self.Qsig)
         M1 = q(lambda w: Ls(w, -1), 0, th(1 + eta)) + q(lambda w: Ls(w, Q0), th(1 + eta), th(1))
         M1 += q(lambda w: ((N4 - 1) * (1 - sg(w)) + (N4 - 2) * (sg(w) - s[n])) * Ls(w, Q0n), th(1), th(s[n])) / ((N4 - 2) * (1 - s[n]))

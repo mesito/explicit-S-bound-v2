@@ -6,24 +6,26 @@ G1  Bellotti-Wong Table 2 with their inputs and shifts: sub-Weyl 66.7 t^{27/164}
   [PASS] row (c,r,eta)=(1.0434,1.25045,0.04) reproduced                         max dev 9.0e-06 (expected < 1.5e-5)
   [PASS] row (c,r,eta)=(1.00006,1.49956,1.54e-05) reproduced                    max dev 9.7e-06 (expected < 1.5e-5)
   [PASS] row (c,r,eta)=(1.49916,1.99836,0.499) reproduced                       max dev 9.1e-06 (expected < 1.5e-5)
+  [PASS] with the HPY input none of the five rows is reproduced; row 1 would have C2 = 0.35495 min dev 0.178, C2 = 0.35495 (expected published C2 = 0.24460)
 
 G2  the 1-line input c1(Q0) = 1/2 + 0.6633/log Q0 (Hoo-Teo: |zeta(1+it)| <= 1/2 log t + 0.6633, t >= e)
-  [PASS] c1(1e9) = 0.532008 (rounded up)                                        0.5320075 
+  [PASS] c1(1e9) = 0.5320075... <= 0.532008 (rounded up)                        0.5320075033 
   [PASS] grid: |it zeta(1+it)| <= c1 |Q0+1+it| log|Q0+1+it| on 0<t<=5e4         max ratio 5.8e-06 
   [PASS] grid: |zeta(it)| <= c1 (2pi)^{-1/2} |Q0+it|^{1/2} log|Q0+it| on 0<t<=5e4 max ratio 9.8e-04 
   [PASS] elementary bounds: sqrt(1+e^2)(1+e) < 11 and pi^-1 sinh(pi e/2)/e sqrt(1+e^2)(1+e) < 46 10.7696, 45.0837 
   [PASS] right sides for |t| <= e exceed 1e10 and 1e5                           1.10e+10, 1.39e+05 
 
 G3  the nine rows of Theorem 1.1 (n = 4, Q0 = 1e9, 30 digits, rounded up at 6 decimals)
-  [PASS] opt@3e+10 HPY admissible; (C1,C2,C3~) = (0.140750, 0.150951, 1.377296) kappa3=2.1e-04 delta=0.4053 
-  [PASS] opt@3e+12 HPY admissible; (C1,C2,C3~) = (0.134791, 0.159606, 1.505817) kappa3=2.1e-04 delta=0.3860 
-  [PASS] opt@1e+15 HPY admissible; (C1,C2,C3~) = (0.129350, 0.169319, 1.643495) kappa3=2.0e-04 delta=0.3679 
-  [PASS] opt@1e+20 HPY admissible; (C1,C2,C3~) = (0.122384, 0.186030, 1.859015) kappa3=2.0e-04 delta=0.3440 
-  [PASS] opt@1e+24 HPY admissible; (C1,C2,C3~) = (0.118798, 0.197172, 1.996010) kappa3=2.0e-04 delta=0.3311 
-  [PASS] opt@1e+30 HPY admissible; (C1,C2,C3~) = (0.115144, 0.211179, 2.163574) kappa3=2.0e-04 delta=0.3174 
-  [PASS] opt@1e+40 SW  admissible; (C1,C2,C3~) = (0.111259, 0.154570, 2.730936) kappa3=2.0e-04 delta=0.3025 
-  [PASS] opt@1e+60 SW  admissible; (C1,C2,C3~) = (0.108109, 0.207558, 2.795522) kappa3=2.9e-04 delta=0.2839 
-  [PASS] opt@1e+100 SW  admissible; (C1,C2,C3~) = (0.105234, 0.214408, 3.175432) kappa3=2.8e-04 delta=0.2714 
+  [PASS] opt@3e+10 HPY admissible; (C1,C2,C3~) = (0.140750, 0.150951, 1.377296) kappa3=2.1e-04 (in C3~: 3.8e-05) delta=0.4053 
+  [PASS] opt@3e+12 HPY admissible; (C1,C2,C3~) = (0.134791, 0.159606, 1.505817) kappa3=2.1e-04 (in C3~: 3.8e-05) delta=0.3860 
+  [PASS] opt@1e+15 HPY admissible; (C1,C2,C3~) = (0.129350, 0.169319, 1.643495) kappa3=2.0e-04 (in C3~: 3.8e-05) delta=0.3679 
+  [PASS] opt@1e+20 HPY admissible; (C1,C2,C3~) = (0.122384, 0.186030, 1.859015) kappa3=2.0e-04 (in C3~: 3.9e-05) delta=0.3440 
+  [PASS] opt@1e+24 HPY admissible; (C1,C2,C3~) = (0.118798, 0.197172, 1.996010) kappa3=2.0e-04 (in C3~: 4.0e-05) delta=0.3311 
+  [PASS] opt@1e+30 HPY admissible; (C1,C2,C3~) = (0.115144, 0.211179, 2.163574) kappa3=2.0e-04 (in C3~: 4.1e-05) delta=0.3174 
+  [PASS] opt@1e+40 SW  admissible; (C1,C2,C3~) = (0.111259, 0.154570, 2.730936) kappa3=2.0e-04 (in C3~: 4.1e-05) delta=0.3025 
+  [PASS] opt@1e+60 SW  admissible; (C1,C2,C3~) = (0.108109, 0.207558, 2.795522) kappa3=2.9e-04 (in C3~: 6.7e-05) delta=0.2839 
+  [PASS] opt@1e+100 SW  admissible; (C1,C2,C3~) = (0.105234, 0.214408, 3.175432) kappa3=2.8e-04 (in C3~: 6.3e-05) delta=0.2714 
+  [PASS] with c1 = 0.532008 in place of c1(1e9) the rounded constants of all nine rows are unchanged max change of C3~ 1.23e-07 (expected < 1.3e-7)
 
 G4  coverage, comparisons, corollaries
   [PASS] every row >= 1 on [e,280], >= 2 on [280, 6.8e6], >= 2.5167 on [6.8e6, 3.06e10] values at e: [1.52, 1.64, 1.77, 1.98, 2.11, 2.28, 2.84, 2.9, 3.28] 
@@ -69,4 +71,4 @@ G8  Remark 5.1: the intermediate configurations at T0 (parameters from optimize_
   [PASS] shift Q3 = 6 admissible for HPY: 0.618 * 6.5^(1/6) * log 6.5 > 1.461   1.5803 
   [PASS] row 1 of Table 1 at T0 rounds to 5.256                                 5.256285 
 
-PASS=52 FAIL=0  runtime 7s
+PASS=54 FAIL=0  runtime 12s

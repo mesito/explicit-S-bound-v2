@@ -2,28 +2,29 @@
 """verify_S_bound.py -- verification suite for
   M. Ismail, "Explicit bounds for S(T) at finite heights" (2026).
 
-Requires: mpmath, numpy.  Uses sbound.py (independent mpmath implementation of the
-constants of Bellotti-Wong, Math. Comp. (2025), Theorems 1.2/1.4).
+Requires: mpmath, numpy, python-flint.  Uses sbound.py (mpmath) and sbound_arb.py (Arb ball arithmetic),
+two implementations of the constants of Bellotti-Wong, Math. Comp. (2025), Theorems 1.2/1.4.
 
 Groups:
-  G1  reproduction of Bellotti-Wong Table 2 (all five rows, sub-Weyl input, c1 = 1)
+  G1  reproduction of Bellotti-Wong Table 2 (all five rows, sub-Weyl input, c1 = 1); with the
+      Hiary-Patel-Yang input in its place none of the five rows is reproduced
   G2  the 1-line input: c1(Q0) = 1/2 + 0.6633/log Q0 from Hoo-Teo (|zeta(1+it)| <= 1/2 log t + 0.6633, t >= e);
       unshifted form for t >= t0 = Q0, shifted forms for all real t (Lemma 3.2); the elementary constants
       of the proof evaluated deterministically, plus grid sanity checks for 0 < t <= 5e4
   G3  the nine rows of Theorem 1.1: admissibility, 30-digit evaluation, rounding-up,
-      the finite-height terms kappa_3
+      the finite-height terms kappa_3; the rounded constants are unchanged when c1(1e9) is replaced by 0.532008
   G4  coverage of e <= T <= 3.06e10 through computed bounds; comparison with every
       tabulated Bellotti-Wong bound; Corollaries (gap bound, N(T) form)
+  G5  CERTIFICATION (python-flint / Arb): every constant of Theorem 1.1 as a rigorous ball
+      enclosure (200-bit ball arithmetic, acb_calc_integrate), the published constants being
+      upper bounds of the enclosures rounded up (written to rows_certified.json); and a rigorous proof of
+      Proposition 1.2 (each difference alpha L + beta log L + gamma is checked at the segment endpoints and at
+      its unique critical point, in ball arithmetic)
+  G6  the shifted critical-line input with Q1 = 1.5: certified on |t| <= 3 in ball arithmetic (t as a ball),
+      analytic for |t| >= 3; and the failure of the Bellotti-Wong shift 1.18 for the HPY input
   G7  Proposition 1.2, the gains: certified lower bound 0.508% and upper bound 8.965% on [T0, 1e200] by adaptive
       bisection in ball arithmetic (monotonicity of M and B), enclosures at the extremal points, the point gains
   G8  Remark 5.1: the values 5.678, 5.357, 5.295, 5.256 at T0 (parameters from optimize_rows.py)
-  G6  the shifted critical-line input with Q1 = 1.5: certified on |t| <= 3 in ball arithmetic (t as a ball),
-      analytic for |t| >= 3; and the failure of the Bellotti-Wong shift 1.18 for the HPY input
-  G5  CERTIFICATION (python-flint / Arb): every constant of Theorem 1.1 as a rigorous ball
-      enclosure (200-bit ball arithmetic, acb_calc_integrate), the published constants being
-      upper bounds of the enclosures rounded up; and a rigorous proof of Proposition 1.2
-      (each difference alpha L + beta log L + gamma is checked at the segment endpoints and at
-      its unique critical point, in ball arithmetic)
 Every check prints PASS/FAIL.  Runtime under a minute.
 """
 import sys, math, json, time
@@ -68,13 +69,22 @@ def G1():
         got = [float(o[k]) for k in ('C1', 'C2', 'C2p', 'C3', 'C3p', 'C3T', 'C3Tp')]
         dev = max(abs(g - x) for g, x in zip(got, ref))
         check("row (c,r,eta)=(%.6g,%.6g,%.3g) reproduced" % (c, r, e), dev < 1.5e-5 and P.admissible(), "max dev %.1e" % dev, "< 1.5e-5")
+    # the same five rows with the Hiary-Patel-Yang input (k1, k2, k3) = (0.618, 1/6, 1) in place of the sub-Weyl input,
+    # all other inputs and shifts unchanged (what the HPY branch of the authors' code returns): no row is reproduced
+    devs = []; C2_row1 = None
+    for (c, r, e), ref in BW_TABLE:
+        o = Params(c, r, e, n=5, c1=1, c2=1, Q0=1, Qsig=1, dps=20, **dict(PRESET_SUBWEYL_BW, k=HPY)).constants()
+        devs.append(max(abs(float(o[k]) - x) for k, x in zip(('C1', 'C2', 'C2p', 'C3', 'C3p', 'C3T', 'C3Tp'), ref)))
+        if C2_row1 is None: C2_row1 = float(o['C2'])
+    check("with the HPY input none of the five rows is reproduced; row 1 would have C2 = 0.35495", min(devs) > 1e-2 and abs(C2_row1 - 0.35495) < 5e-6,
+          "min dev %.3f, C2 = %.5f" % (min(devs), C2_row1), "published C2 = 0.24460")
 
 def G2():
     print("\nG2  the 1-line input c1(Q0) = 1/2 + 0.6633/log Q0 (Hoo-Teo: |zeta(1+it)| <= 1/2 log t + 0.6633, t >= e)")
     c1 = c1_of_Q0(Q0)
-    check("c1(1e9) = 0.532008 (rounded up)", abs(float(c1) - 0.5320077) < 2e-6, "%.7f" % c1)
-    # analytic steps used in the proof: for 3 <= t <= Q0, 1/2 log t + 0.6633 <= 1/2 log Q0 + 0.6633 = c1 log Q0; for t >= Q0,
-    # (1/2 + 0.6633/log t) log t <= c1 log t.  Sanity checks of the two shifted inequalities on a grid (the proof for |t| <= 3 is analytic):
+    check("c1(1e9) = 0.5320075... <= 0.532008 (rounded up)", abs(float(c1) - 0.5320075033) < 1e-9 and c1 <= mp.mpf('0.532008'), "%.10f" % c1)
+    # analytic steps used in the proof: for e <= t <= Q0, 1/2 log t + 0.6633 <= 1/2 log Q0 + 0.6633 = c1 log Q0; for t >= Q0,
+    # (1/2 + 0.6633/log t) log t <= c1 log t.  Sanity checks of the two shifted inequalities on a grid (the proof for |t| <= e is analytic):
     mp.mp.dps = 15
     grid = list(np.linspace(0.01, 60, 120)) + list(np.geomspace(60, 5e4, 80))
     w1 = max(abs(mp.mpc(0, t) * mp.zeta(1 + 1j * mp.mpf(t))) / (float(c1) * abs(mp.mpc(Q0 + 1, t)) * mp.log(abs(mp.mpc(Q0 + 1, t)))) for t in grid)
@@ -96,9 +106,19 @@ def G3():
         adm = P.admissible(); o = P.constants()
         up = lambda x: math.ceil(float(x) * 1e6) / 1e6
         row = dict(Topt=Topt, regime=reg, c=c, r=r, eta=e, C1=up(o['C1']), C2=up(o['C2']), C3T=up(o['C3T']), C3N=up(o['C3']),
-                   raw=[float(mp.nstr(o[k], 12)) for k in ('C1', 'C2', 'C3T', 'C3')], kap3=float(o['kap3']), delta=float(P.delta))
+                   raw=[float(mp.nstr(o[k], 12)) for k in ('C1', 'C2', 'C3T', 'C3')], kap3=float(o['kap3']),
+                   kap3_in_C3=float(o['kap3'] / (2 * mp.pi * P.L)), delta=float(P.delta))
         out.append(row)
-        check("opt@%.0e %-3s admissible; (C1,C2,C3~) = (%.6f, %.6f, %.6f)" % (Topt, reg, row['C1'], row['C2'], row['C3T']), adm and row['kap3'] < 1e-3, "kappa3=%.1e delta=%.4f" % (row['kap3'], row['delta']))
+        check("opt@%.0e %-3s admissible; (C1,C2,C3~) = (%.6f, %.6f, %.6f)" % (Topt, reg, row['C1'], row['C2'], row['C3T']), adm and row['kap3'] < 1e-3,
+              "kappa3=%.1e (in C3~: %.1e) delta=%.4f" % (row['kap3'], row['kap3_in_C3'], row['delta']))
+    # the constants are computed with c1(Q0) = 1/2 + 0.6633/log Q0 (unrounded); with the rounded-up value 0.532008 in its
+    # place only C3~ and C3 change (C1, C2 do not depend on c1), and the published (rounded-up) constants are the same
+    same = True; dmax = 0.0
+    for (Topt, reg, c, r, e), w in zip(ROWS, out):
+        P = Params(c, r, e, n=4, k=(HPY if reg == 'HPY' else SUBWEYL), c1=mp.mpf('0.532008'), c2=1, Q0=Q0, Q1=Q1, Q2=Q1, Q3=Q0, Q10=Q0, Q11=Q0, dps=30)
+        o = P.constants(); dmax = max(dmax, float(o['C3T']) - w['raw'][2])
+        same = same and (up(o['C1']), up(o['C2']), up(o['C3T']), up(o['C3'])) == (w['C1'], w['C2'], w['C3T'], w['C3N'])
+    check("with c1 = 0.532008 in place of c1(1e9) the rounded constants of all nine rows are unchanged", same and 0 < dmax < 1.3e-7, "max change of C3~ %.2e" % dmax, "< 1.3e-7")
     json.dump(out, open("rows_theorem_1_1.json", "w"), indent=1)
     return out
 
@@ -136,6 +156,8 @@ def G5(rows):
         ok = P.admissible() and all(ups[key] == w[key] for key in ('C1', 'C2', 'C3T', 'C3N')) and max(float(o[k].rad()) for k in ('C1', 'C2', 'C3T')) < 1e-8
         check("opt@%.0e certified enclosures; rounded upper bounds equal the published constants" % Topt, ok, "radii <= %.1e" % max(float(o[k].rad()) for k in ('C1', 'C2', 'C3T')))
         cert.append(ups)
+    json.dump([dict(Topt=Topt, regime=reg, c=c, r=r, eta=e, C1=u['C1'], C2=u['C2'], C3T=u['C3T'], C3N=u['C3N'])
+               for (Topt, reg, c, r, e), u in zip(ROWS, cert)], open("rows_certified.json", "w"), indent=1)
     ctx.prec = 200
     R = [(arb(str(w['C1'])), arb(str(w['C2'])), arb(str(w['C3T']))) for w in cert]
     B = [(arb(str(a)), arb(str(b)), arb(str(cc))) for a, b, cc in BW_S]
@@ -154,7 +176,7 @@ def G5(rows):
             al, be, ga = R[i][0] - q[0], R[i][1] - q[1], R[i][2] - q[2]
             D = lambda L: al * L + be * L.log() + ga
             vals = [D(a), D(b)]; Ls = -be / al
-            if (Ls > a) and (Ls < b): vals.append(D(Ls))
+            if not ((Ls <= a) or (Ls >= b)): vals.append(D(Ls))      # critical point not certified to lie outside (a, b)
             for v in vals:
                 if not (v < 0): allok = False
                 if v > worst: worst = v; wpair = (i + 1, jq + 1)
@@ -175,7 +197,7 @@ def G6():
     check("HPY shifted inequality certified on 0 <= t <= 3 (ball arithmetic, %d subintervals)" % N, ok, "minimal margin %s" % worst.str(4), "> 0")
     # sub-Weyl input (rows 7-9): on |t| <= 3, |(s-1) zeta(s)| <= 3.05 * 1.461 < 4.5 while 66.7 |Q1+s|^{1+27/164} >= 66.7 * 2^{1.165} > 149
     check("sub-Weyl shifted inequality on 0 <= t <= 3 (trivial margin)", 66.7 * 2**(1 + 27 / 164) > 149 and 3.05 * 1.461 < 4.5, "RHS >= 149.5, LHS <= 4.5")
-    # the old shift 1.18 fails for HPY at t = 0 (this is why Q1 = 1.5 is used)
+    # the Bellotti-Wong shift 1.18 fails for HPY at t = 0 (this is why Q1 = 1.5 is used)
     import mpmath as mpm; mpm.mp.dps = 15
     lhs = abs(mpm.mpc(-0.5, 0) * mpm.zeta(0.5)); rhs = 0.618 * abs(mpm.mpc(1.68, 0))**(7 / 6) * mpm.log(1.68)
     check("Q1 = 1.18 of Bellotti-Wong is NOT admissible for the HPY input at t = 0", lhs > rhs, "LHS %.4f > RHS %.4f" % (lhs, rhs))

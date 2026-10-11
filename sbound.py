@@ -16,8 +16,9 @@ Inputs (each with its own range; what the method consumes are the shifted forms,
 import mpmath as mp
 
 def c1_of_Q0(Q0):
-    """c1 such that 1/2 log t + 0.6633 <= c1 log|Q0+1+it| for all t >= 3 (Hoo-Teo 2026, valid for t >= e);
-    see the input lemma of the paper.  For Q0 = 1e9: c1 = 0.532008."""
+    """c1(Q0) = 1/2 + 0.6633/log Q0 of Lemma 3.2: 1/2 log t + 0.6633 <= c1 max(log Q0, log t) <= c1 log|Q0+1+it|
+    for all t >= e (Hoo-Teo 2026: |zeta(1+it)| <= 1/2 log t + 0.6633, t >= e).  For Q0 = 1e9: c1 = 0.5320075...,
+    i.e. 0.532008 rounded up; the constants are computed with the unrounded value."""
     Q0 = mp.mpf(Q0)
     return mp.mpf('0.5') + mp.mpf('0.6633') / mp.log(Q0)
 
@@ -97,7 +98,9 @@ class Params:
         t1c = th(1 - self.c)
         kap2 = ((mp.pi - t1c) / (2 * self.J2)) * (mp.log(mp.zeta(1 - self.c + self.r)) + 2 * mp.fsum(
             mp.log(mp.zeta(1 - self.c - self.r * mp.cos(mp.pi * j / self.J2 + (1 - f(j) / self.J2) * t1c))) for j in range(1, self.J2)))
-        # ---- kappa3 (finite-T0 terms)
+        # ---- kappa3 (finite-T0 terms).  Two points of [BW, 3.4.3], see Section 2 of the paper: the coefficient of the integral
+        #      over [theta_1, theta_{sigma_{n+4}}] in M1 is 1/((2^{n+4}-2)(1-sigma_{n+4})) (a product, as displayed there), and the
+        #      second term of kappa3 is max(0, M2)/(2 T0 log T0) (log T0, not log log T0)
         Ls = self.Lstar; Q0, Q2, Q10, Q11 = self.Q0, self.Q2, self.Q10, self.Q11; Q0n = max(Q0, self.Qsig)
         M1 = q(lambda w: Ls(w, -1), 0, th(1 + eta)) + q(lambda w: Ls(w, Q0), th(1 + eta), th(1))
         M1 += q(lambda w: ((N4 - 1) * (1 - sg(w)) + (N4 - 2) * (sg(w) - s[n])) * Ls(w, Q0n), th(1), th(s[n])) / ((N4 - 2) * (1 - s[n]))
